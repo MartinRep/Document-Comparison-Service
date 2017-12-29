@@ -9,11 +9,11 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/index.js"></script>
 </head>
 <body>
-	<form bgcolor="white" method="POST" enctype="multipart/form-data" action="UploadHandler">
+	<form method="POST" enctype="multipart/form-data" action="UploadHandler">
 		<fieldset>
 			<legend><h3>Document Comparison Service</h3></legend>
 			<b>Document Title :</b><br>
-			<input id="title" name="txtTitle" type="text" pattern=[a-zA-z0-9_]{1,9} 
+			<input id="title" name="txtTitle" type="text" 
 			placeholder="Please enter the Document title here" size="50" />
 			<p/>
 			<p id="error"><font color="RED">${message}</font></p>

@@ -58,16 +58,11 @@ public class UploadHandler extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("POST request");
+		int jobNumber = 0;
+		String title = request.getParameter("txtTitle");
 		Part part = request.getPart("txtDocument");
-		BufferedReader brTextFile = new BufferedReader(new InputStreamReader(part.getInputStream()));
-		String line = null;
-		while ((line = brTextFile.readLine()) != null) 
-		{
-			System.out.println(line);
-		}
-		//doGet(request, response);
-		
+		BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
+		Job job = new Job(jobNumber, title, document);
 	}
 
 }
