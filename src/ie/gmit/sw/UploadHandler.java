@@ -3,6 +3,8 @@ package ie.gmit.sw;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.ArrayBlockingQueue;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -21,6 +23,8 @@ maxFileSize=1024*1024*50,      // 10MB. The maximum size allowed for uploaded fi
 maxRequestSize=1024*1024*51)   // 50MB. he maximum size allowed for a multipart/form-data request, in bytes.
 public class UploadHandler extends HttpServlet {
 	private static final long serialVersionUID = 465419841991L;
+	private ArrayBlockingQueue<Job> inQueue;
+	JobHandler jobHandler;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -34,7 +38,8 @@ public class UploadHandler extends HttpServlet {
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		// TODO Auto-generated method stub
+		jobHandler = JobHandler.Init(10);
+		inQueue = jobHandler.GetInQueue();
 	}
 
 	/**
@@ -58,11 +63,19 @@ public class UploadHandler extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int jobNumber = 0;
+		int jobNumber = jobHandler.GetJobNumber();
 		String title = request.getParameter("txtTitle");
 		Part part = request.getPart("txtDocument");
 		BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
 		Job job = new Job(jobNumber, title, document);
+		try {
+			inQueue.put(job);
+		} catch (InterruptedException e) {
+			System.out.printf("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage());
+		}
+		request.setAttribute("jobNumber", jobNumber);
+		request.setAttribute("title", title);
+		request.getRequestDispatcher("/poll.jsp").forward(request, response);
 	}
 
 }
