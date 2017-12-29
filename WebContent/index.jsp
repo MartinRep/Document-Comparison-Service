@@ -5,19 +5,40 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Document Comparison Service</title>
+<script type="text/javascript" src="${pageContext.request.contextPath}/lib/jquery-3.2.1.min.js"></script>
 </head>
 <body>
 	<form bgcolor="white" method="POST" enctype="multipart/form-data" action="UploadHandler">
 		<fieldset>
 			<legend><h3>Document Comparison Service</h3></legend>
 			<b>Document Title :</b><br>
-			<input name="txtTitle" type="text" pattern=[a-zA-z0-9_]{1,9} 
-			placeholder="If empty, filename is used" size="50" />
+			<input id="title" name="txtTitle" type="text" onChange="Validate()" pattern=[a-zA-z0-9_]{1,9} 
+			placeholder="Please enter the Document title here" size="50" />
 			<p/>
-			<p><font color="RED">${message}</font></p>
-			<input type="file" name="txtDocument"/>
-			<center><input type="submit" value="Compare Document"></center>
+			<p id="error"><font color="RED">${message}</font></p>
+			<input id="file" type="file" name="txtDocument"/>
+			<center><input id="submitBt" type="submit" value="Compare Document" disabled="true"></center>
 		</fieldset>							
-	</form>	
+	</form>
+	<script>
+		jQuery.fn.existsWithValue = function() { 
+		    return this.length && this.val().length; 
+		}
+		
+		function Validate()
+		{
+			if ($("#title").existsWithValue() && $("#file").existsWithValue()) 
+			{
+				$("#submitBt").removeAttr("disabled");
+				console.log("Btn Enabled");
+			}
+			else 
+			{
+				$("#submitBt").attr("disabled","True");
+				console.log("Btn Disabled");
+			}
+		}
+		
+	</script>
 </body>
 </html>
