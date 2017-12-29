@@ -18,7 +18,7 @@
 			<p/>
 			<p id="error"><font color="RED">${message}</font></p>
 			<input id="file" type="file" name="txtDocument"/>
-			<center><input id="submitBt" type="submit" value="Compare Document" disabled="true"></center>
+			<center><button id="submitBt" onClick="return Validate()" disabled="true">Compare Document</button></center>
 		</fieldset>							
 	</form>
 </body>

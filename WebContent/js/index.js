@@ -22,11 +22,13 @@ $(document).ready(function() {Init();});
 			{
 				$("#submitBt").removeAttr("disabled");
 				console.log("Btn Enabled");
+				return true;
 			}
 			else 
 			{
 				$("#submitBt").attr("disabled","True");
 				console.log("Btn Disabled");
+				return false;
 			}
 		}
 		
