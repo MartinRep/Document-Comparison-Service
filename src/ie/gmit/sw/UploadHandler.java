@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -38,7 +39,9 @@ public class UploadHandler extends HttpServlet {
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException {
-		jobHandler = JobHandler.Init(10);
+		int numOfJobs = Integer.parseInt(config.getInitParameter("workers"));
+		System.out.println("Num of Jobs:" + numOfJobs);
+		jobHandler = JobHandler.Init(numOfJobs);
 		inQueue = jobHandler.GetInQueue();
 	}
 
