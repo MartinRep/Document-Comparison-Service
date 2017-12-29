@@ -9,7 +9,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/index.js"></script>
 </head>
 <body>
-	<form method="POST" enctype="multipart/form-data" action="UploadHandler">
+	<form method="POST" enctype="multipart/form-data" action="upload">
 		<fieldset>
 			<legend><h3>Document Comparison Service</h3></legend>
 			<b>Document Title :</b><br>

@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.ArrayBlockingQueue;
-
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -18,11 +16,12 @@ import javax.servlet.http.Part;
 /**
  * Servlet implementation class UploadHandler
  */
-@WebServlet(asyncSupported = true, description = "Handles new document file upload", urlPatterns = { "/UploadHandler" })
+@WebServlet(asyncSupported = true, description = "Handles new document file upload", urlPatterns = { "/upload" })
 @MultipartConfig(fileSizeThreshold=1024*1024*5, // 2MB. The file size in bytes after which the file will be temporarily stored on disk. The default size is 0 bytes.
-maxFileSize=1024*1024*50,      // 10MB. The maximum size allowed for uploaded files, in bytes
-maxRequestSize=1024*1024*51)   // 50MB. he maximum size allowed for a multipart/form-data request, in bytes.
-public class UploadHandler extends HttpServlet {
+maxFileSize=1024*1024*50,      // 50MB. The maximum size allowed for uploaded files, in bytes
+maxRequestSize=1024*1024*51)   // 51MB. he maximum size allowed for a multipart/form-data request, in bytes.
+public class UploadHandler extends HttpServlet 
+{
 	private static final long serialVersionUID = 465419841991L;
 	private ArrayBlockingQueue<Job> inQueue;
 	JobHandler jobHandler;
@@ -30,7 +29,8 @@ public class UploadHandler extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public UploadHandler() {
+    public UploadHandler() 
+    {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,26 +38,27 @@ public class UploadHandler extends HttpServlet {
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
-	public void init(ServletConfig config) throws ServletException {
-		int numOfJobs = Integer.parseInt(config.getInitParameter("workers"));
-		System.out.println("Num of Jobs:" + numOfJobs);
-		jobHandler = JobHandler.Init(numOfJobs);
+	public void init(ServletConfig config) throws ServletException 
+	{
+		int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
+		System.out.println("Num of Workers:" + numOfWorkers);
+		jobHandler = JobHandler.Init(numOfWorkers);
 		inQueue = jobHandler.GetInQueue();
 	}
 
 	/**
 	 * @see Servlet#destroy()
 	 */
-	public void destroy() {
+	public void destroy() 
+	{
 		// TODO Auto-generated method stub
 	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		request.setAttribute("message", "There was an error processing the file");
 		request.getRequestDispatcher("/index.jsp").forward(request, response);
 	}
@@ -65,7 +66,8 @@ public class UploadHandler extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		int jobNumber = jobHandler.GetJobNumber();
 		String title = request.getParameter("txtTitle");
 		Part part = request.getPart("txtDocument");
@@ -80,5 +82,13 @@ public class UploadHandler extends HttpServlet {
 		request.setAttribute("title", title);
 		request.getRequestDispatcher("/poll.jsp").forward(request, response);
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		jobHandler.Shutdown();
+		super.finalize();
+	}
+	
+	
 
 }
