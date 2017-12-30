@@ -1,3 +1,6 @@
+# Server log file
+/WebContent/logs
+
 # Compiled class file
 *.class
 
