@@ -15,8 +15,8 @@ public class Worker implements Runnable
 	
 	public Worker() 
 	{
-		inQueue = JobHandler.GetInQueue();
-		outQueue = JobHandler.GetOutQueue();
+		inQueue = WorkersHandler.GetInQueue();
+		outQueue = WorkersHandler.GetOutQueue();
 	}
 
 	@Override

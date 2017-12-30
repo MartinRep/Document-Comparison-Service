@@ -26,39 +26,24 @@ public class UploadHandler extends HttpServlet
 	private ArrayBlockingQueue<Job> inQueue;
 	private ArrayBlockingQueue<String> servLog;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public UploadHandler() 
-    {
-        super();
-        // TODO Auto-generated constructor stub
-    }
-
 	/**
 	 * @see Servlet#init(ServletConfig)
 	 */
 	public void init(ServletConfig config) throws ServletException 
 	{
+		// gets Initial parameters from web.xml
 		int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
 		String logFile = config.getInitParameter("logFile");
-		// Singleton variables share initialization has to be First thing to init.
-		JobHandler.Init(numOfWorkers);
-		servLog = JobHandler.GetServLog();
-		// Initialing Logging service to listen on servLog ArrayBlockingQueue messages.
+		// Singleton variables share initialization. Has to be First thing to init.
+		WorkersHandler.Init(numOfWorkers);
+		// Getting ArrayBlockingQueue for log entries
+		servLog = WorkersHandler.GetServLog();
+		// Initialing Logging service to listen on servLog ArrayBlockingQueue messages and write to file logFile.
 		LogService.Init(servLog, logFile);
-		servLog.offer("Num of Workers: " + numOfWorkers);
-		inQueue = JobHandler.GetInQueue();
-		servLog = JobHandler.GetServLog();
-		servLog.offer("Upload Servlet initialized.");
-	}
-
-	/**
-	 * @see Servlet#destroy()
-	 */
-	public void destroy() 
-	{
-		// TODO Auto-generated method stub
+		inQueue = WorkersHandler.GetInQueue();
+		servLog = WorkersHandler.GetServLog();
+		// Servlet first log entry
+		servLog.offer("Upload Servlet initialized with workers amount of "+ numOfWorkers);
 	}
 
 	/**
@@ -75,7 +60,7 @@ public class UploadHandler extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		int jobNumber = JobHandler.GetJobNumber();
+		int jobNumber = WorkersHandler.GetJobNumber();
 		String title = request.getParameter("txtTitle");
 		Part part = request.getPart("txtDocument");
 		BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
@@ -89,10 +74,19 @@ public class UploadHandler extends HttpServlet
 		request.setAttribute("title", title);
 		request.getRequestDispatcher("/poll.jsp").forward(request, response);
 	}
+	
+	/**
+	 * @see Servlet#destroy()
+	 */
+	public void destroy() 
+	{
+		WorkersHandler.Shutdown();
+		LogService.Shutdown();
+	}
 
 	@Override
 	protected void finalize() throws Throwable {
-		JobHandler.Shutdown();
+		WorkersHandler.Shutdown();
 		LogService.Shutdown();
 		super.finalize();
 	}

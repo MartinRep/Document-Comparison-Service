@@ -38,7 +38,7 @@ public class LogService {
 		return instance;
 	}
 	
-	public static void logger() throws InterruptedException
+	private static void logger() throws InterruptedException
 	{	 
 		//Creates Logger for log file management
 		Logger logger = Logger.getLogger("ServerLog");
@@ -57,7 +57,7 @@ public class LogService {
 		    	System.out.println("Error Opening Log file! Please set the corrent path in web.xml");
 		    }
 		    String log = new StringBuilder().append("Logging Service Started in: ").append(logFile).append(System.getProperty("line.separator")).append("==============================").toString();
-		    //Allows to orderly finish thread. Waits for "poison pill" to know when to stop 
+		    //Allows to orderly finish thread. Waits for stop to be true to know when to stop 
 			do
 			{
 				logger.info(log);

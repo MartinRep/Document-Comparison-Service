@@ -13,7 +13,7 @@
 	</init-param>
 	<init-param>
   		<param-name>logFile</param-name>
-  		<param-value>/home/bigrepo/workspace/Document-Comparison-Service/server.log</param-value>
+  		<param-value>/home/bigrepo/workspace/Document-Comparison-Service/logs/server.log</param-value>
 	</init-param>
 </servlet>
 </web-app>
