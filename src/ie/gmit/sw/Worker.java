@@ -17,13 +17,13 @@ public class Worker implements Runnable
 	{
 		inQueue = JobHandler.GetInQueue();
 		outQueue = JobHandler.GetOutQueue();
-		thisWorkerNumber = workerNumber;
-		workerNumber++;
 	}
 
 	@Override
 	public void run() 
 	{
+		thisWorkerNumber = workerNumber;
+		workerNumber++;
 		try {
 			job = inQueue.take();
 			// Process document, make singles

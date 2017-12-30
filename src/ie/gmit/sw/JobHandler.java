@@ -12,25 +12,28 @@ public class JobHandler
 	private static JobHandler instance;
 	private static ExecutorService executor;
 	private static volatile int jobNumber = 0;
+	private static ArrayBlockingQueue<String> servLog;
 	
-	private JobHandler()
+	private JobHandler(int numOfWorkers)
 	{
+		inQueue = new ArrayBlockingQueue<>(numOfWorkers);
+		outQueue = new ConcurrentHashMap<>();
+		servLog = new ArrayBlockingQueue<>(numOfWorkers);
+		//also initialize actual workers thread pool of size workers from web.xml.
+		executor = Executors.newFixedThreadPool(numOfWorkers);
+		for (int i = 0; i < numOfWorkers; i++) 
+		{
+			Runnable worker = new Worker();
+			executor.execute(worker);
+		}
+		servLog.offer("JobHandler initialized.");
 	}
 	
 	public static synchronized JobHandler Init(int numOfWorkers)
 	{
 		if(instance == null)
 		{
-			instance = new JobHandler();
-		}
-		inQueue = new ArrayBlockingQueue<>(numOfWorkers);
-		outQueue = new ConcurrentHashMap<>();
-		//also initialize actual workers 10 or so.
-		executor = Executors.newFixedThreadPool(numOfWorkers);
-		for (int i = 0; i < numOfWorkers; i++) 
-		{
-			Runnable worker = new Worker();
-			executor.execute(worker);
+			instance = new JobHandler(numOfWorkers);
 		}
 		return instance;
 	}
@@ -49,6 +52,11 @@ public class JobHandler
 	{
 		jobNumber++;
 		return jobNumber;
+	}
+	
+	public static ArrayBlockingQueue<String> GetServLog()
+	{
+		return servLog;
 	}
 	
 	public static void Shutdown()

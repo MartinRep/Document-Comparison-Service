@@ -24,7 +24,7 @@ public class UploadHandler extends HttpServlet
 {
 	private static final long serialVersionUID = 465419841991L;
 	private ArrayBlockingQueue<Job> inQueue;
-	JobHandler jobHandler;
+	private ArrayBlockingQueue<String> servLog;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,9 +41,16 @@ public class UploadHandler extends HttpServlet
 	public void init(ServletConfig config) throws ServletException 
 	{
 		int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
-		System.out.println("Num of Workers:" + numOfWorkers);
-		jobHandler = JobHandler.Init(numOfWorkers);
-		inQueue = jobHandler.GetInQueue();
+		String logFile = config.getInitParameter("logFile");
+		// Singleton variables share initialization has to be First thing to init.
+		JobHandler.Init(numOfWorkers);
+		servLog = JobHandler.GetServLog();
+		// Initialing Logging service to listen on servLog ArrayBlockingQueue messages.
+		LogService.Init(servLog, logFile);
+		servLog.offer("Num of Workers: " + numOfWorkers);
+		inQueue = JobHandler.GetInQueue();
+		servLog = JobHandler.GetServLog();
+		servLog.offer("Upload Servlet initialized.");
 	}
 
 	/**
@@ -68,7 +75,7 @@ public class UploadHandler extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		int jobNumber = jobHandler.GetJobNumber();
+		int jobNumber = JobHandler.GetJobNumber();
 		String title = request.getParameter("txtTitle");
 		Part part = request.getPart("txtDocument");
 		BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
@@ -76,7 +83,7 @@ public class UploadHandler extends HttpServlet
 		try {
 			inQueue.put(job);
 		} catch (InterruptedException e) {
-			System.out.printf("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage());
+			servLog.offer(String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
 		}
 		request.setAttribute("jobNumber", jobNumber);
 		request.setAttribute("title", title);
@@ -85,7 +92,8 @@ public class UploadHandler extends HttpServlet
 
 	@Override
 	protected void finalize() throws Throwable {
-		jobHandler.Shutdown();
+		JobHandler.Shutdown();
+		LogService.Shutdown();
 		super.finalize();
 	}
 	

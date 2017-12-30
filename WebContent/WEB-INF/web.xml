@@ -11,5 +11,9 @@
   		<param-name>workers</param-name>
   		<param-value>10</param-value>
 	</init-param>
+	<init-param>
+  		<param-name>logFile</param-name>
+  		<param-value>/home/bigrepo/workspace/Document-Comparison-Service/server.log</param-value>
+	</init-param>
 </servlet>
 </web-app>
