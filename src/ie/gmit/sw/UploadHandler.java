@@ -35,13 +35,13 @@ public class UploadHandler extends HttpServlet
 		int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
 		String logFile = config.getInitParameter("logFile");
 		// Singleton variables share initialization. Has to be First thing to init.
-		WorkersHandler.Init(numOfWorkers);
+		WorkersHandler.init(numOfWorkers);
 		// Getting ArrayBlockingQueue for log entries
-		servLog = WorkersHandler.GetServLog();
+		servLog = WorkersHandler.getServLog();
 		// Initialing Logging service to listen on servLog ArrayBlockingQueue messages and write to file logFile.
-		LogService.Init(servLog, logFile);
-		inQueue = WorkersHandler.GetInQueue();
-		servLog = WorkersHandler.GetServLog();
+		LogService.init(servLog, logFile);
+		inQueue = WorkersHandler.getInQueue();
+		servLog = WorkersHandler.getServLog();
 		// Servlet first log entry
 		servLog.offer("Upload Servlet initialized with workers amount of "+ numOfWorkers);
 	}
@@ -60,7 +60,7 @@ public class UploadHandler extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		int jobNumber = WorkersHandler.GetJobNumber();
+		int jobNumber = WorkersHandler.getJobNumber();
 		String title = request.getParameter("txtTitle");
 		Part part = request.getPart("txtDocument");
 		BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
@@ -80,14 +80,13 @@ public class UploadHandler extends HttpServlet
 	 */
 	public void destroy() 
 	{
-		WorkersHandler.Shutdown();
-		LogService.Shutdown();
+		WorkersHandler.shutdown();
+		LogService.shutdown();
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
-		WorkersHandler.Shutdown();
-		LogService.Shutdown();
+		destroy();
 		super.finalize();
 	}
 	

@@ -29,7 +29,7 @@ public class LogService {
         dLogger.start();
 	}
 	
-	public static synchronized LogService Init( ArrayBlockingQueue<String> servLog, String logFile)
+	public static synchronized LogService init( ArrayBlockingQueue<String> servLog, String logFile)
 	{
 		if(instance == null)
 		{
@@ -67,7 +67,7 @@ public class LogService {
 			logger.warning(log);
 	}
 	
-	public static void Shutdown()
+	public static void shutdown()
 	{
 		stop = true;
 	}
@@ -75,7 +75,7 @@ public class LogService {
 	@Override
 	protected void finalize() throws Throwable {
 		super.finalize();
-		Shutdown();
+		shutdown();
 	}
 	
 	

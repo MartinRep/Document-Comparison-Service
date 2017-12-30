@@ -12,6 +12,7 @@ public class WorkersHandler
 	private static WorkersHandler instance;
 	private static ExecutorService executor;
 	private static volatile int jobNumber = 0;
+	private static volatile int workerNumber = 0;
 	private static ArrayBlockingQueue<String> servLog;
 	
 	private WorkersHandler(int numOfWorkers)
@@ -32,7 +33,7 @@ public class WorkersHandler
 	}
 	
 	// Singleton
-	public static synchronized WorkersHandler Init(int numOfWorkers)
+	public static synchronized WorkersHandler init(int numOfWorkers)
 	{
 		if(instance == null)
 		{
@@ -41,37 +42,46 @@ public class WorkersHandler
 		return instance;
 	}
 	
-	public static ArrayBlockingQueue<Job> GetInQueue()
+	public static ArrayBlockingQueue<Job> getInQueue()
 	{
 		return inQueue;
 	}
 	
-	public static ConcurrentHashMap<Integer, Results> GetOutQueue()
+	public static ConcurrentHashMap<Integer, Results> getOutQueue()
 	{
 		return outQueue;
 	}
 	
 	// This way it's easy to keep track on number of total jobs. Can be saved/processed
-	public static synchronized int GetJobNumber()
+	public static synchronized int getJobNumber()
 	{
 		jobNumber++;
 		return jobNumber;
 	}
 	
-	public static ArrayBlockingQueue<String> GetServLog()
+	// Easy way to keep track
+	public static synchronized int getWorkerNumber()
+	{
+		workerNumber++;
+		return workerNumber;
+	}
+	
+	public static ArrayBlockingQueue<String> getServLog()
 	{
 		return servLog;
 	}
 	
-	// Safe shutting down of thread pool, to awoid possible memory leaks
-	public static void Shutdown()
+	// Safe shutting down of thread pool, to avoid possible memory leaks
+	public static void shutdown()
 	{
 		executor.shutdown();
+		servLog.offer(String.format("Total jobs processed: %d", jobNumber));
+		servLog.offer(String.format("Total workers spawned: %d", workerNumber));
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
-		Shutdown();
+		shutdown();
 		super.finalize();
 	}
 	

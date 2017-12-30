@@ -6,16 +6,26 @@ import java.util.HashMap;
 public class Results 
 {
 	private int jobNumber;
-	private String documentName;
+	private String title;
 	private ArrayList<String> docs;
 	private HashMap<String, String> docsResults;
 	
 	public Results(int jobNumber, String documentName) {
 		super();
 		this.jobNumber = jobNumber;
-		this.documentName = documentName;
+		this.title = documentName;
 		docs = new ArrayList<>();
 		docsResults = new HashMap<>();
+	}
+	
+	public int GetJobNumber()
+	{
+		return jobNumber;
+	}
+	
+	public String GetTitle()
+	{
+		return title;
 	}
 	
 	public void AddResult(String document, String result)
