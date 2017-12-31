@@ -1,11 +1,21 @@
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
-    width: 100%;
+    width: auto;
+}
+
+div.centered {
+	text-align: center;
+}
+
+div.centered table 
+{
+    margin: 0 auto; 
+    text-align: left;
 }
 
 td, th {
-    border: 1px solid #dddddd;
+    border: 1px solid #000000;
     text-align: left;
     padding: 8px;
 }

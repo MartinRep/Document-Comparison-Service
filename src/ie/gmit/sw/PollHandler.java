@@ -43,7 +43,7 @@ public class PollHandler extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String title = request.getParameter("title");
 		int jobNumber = Integer.parseInt(request.getParameter("jobNumber"));
-		if(outQueue.containsKey(jobNumber))
+		if(outQueue.size() > 0 && outQueue.containsKey(jobNumber))
 		{
 			// Getting result value as well removing it from shared Hashmap
 			Results results = outQueue.remove(jobNumber);
@@ -51,7 +51,7 @@ public class PollHandler extends HttpServlet {
 			String cssLocation = request.getContextPath() + "/css/results.css";
 		    String cssTag = "<link rel='stylesheet' type='text/css' href='" + cssLocation + "'>";
 			out.printf("<html><head>%s</head><body>", cssTag);		 
-			out.print("<table>");
+			out.print("<div class='centered'><table>");
 			out.printf("<h1 align=\"center\"><b>%s</b></h1>" , title);
 			out.print("<tr><th>Document title</th><th>Similarity</th></tr>");
 			for(String docTitle : results.getDocuments())
@@ -65,7 +65,7 @@ public class PollHandler extends HttpServlet {
 				out.print("</td></tr>");
 			}
 			out.println();
-			out.print("</table>");
+			out.print("</table></div>");
 			//Home button
 			out.printf("<p  align=\"center\"><button onclick=\"window.location.href=' /Document-Comparison-Service/'\">Home</button></p>");
 			
