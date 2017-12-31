@@ -74,4 +74,12 @@ public class Document
 		return this.minHashes.size();
 	}
 
+	@Override
+	public String toString()
+	{
+		return String.format("Document title: %s MinHashes: %d hashFunctions: %d", this.getTitle(), this.getMinHashesSize(), this.getHashFunctionsSize());
+	}
+	
+	
+
 }

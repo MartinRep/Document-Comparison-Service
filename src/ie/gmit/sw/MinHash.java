@@ -19,7 +19,7 @@ public class MinHash implements JobProcessor {
 	Document document;
 	Results results;
 	private static String dbFile = "MinHash.d4o";
-	private int shingles = 299;
+	private int shingles = 300;
 	private static ArrayBlockingQueue<String> servLog;
 	private List<Document> documents = new ArrayList<>();
 	ObjectContainer db;
@@ -41,10 +41,21 @@ public class MinHash implements JobProcessor {
 			document.setHashFunctions(getHashFunctions());
 			generateMinHashes(hashes, document.getHashFunctions());
 			// Compare document against documents
+			// HERE.
+			for(Document tmpDocument : documents)
+			{
+				Set<Integer> retainAll = new TreeSet<>(document.getMinHashes());
+				retainAll.retainAll(tmpDocument.getMinHashes());
+				float similarity = (retainAll.size() / shingles) * 100;
+				results.AddResult(tmpDocument.getTitle(), String.valueOf(similarity));
+				System.out.printf("Result for Document %s is: %s", tmpDocument.getTitle(), results.GetResult(tmpDocument.getTitle()));
+			}
+			System.out.println(results.GetResultsCount());
+			
+			
 			db = Db4oEmbedded.openFile(dbFile);
-			documents.add(document);
-			db.store(documents);
-			servLog.offer("Documents saved.");
+			db.store(document);
+			servLog.offer("Document saved.");
 			db.close();
 			// First run, just save the document. No comparing
 			if(documents.isEmpty()) 
@@ -105,7 +116,7 @@ public class MinHash implements JobProcessor {
 		if(documents.isEmpty())
 		{
 			Random random = new Random();
-			for (int i = 0; i < shingles; i++)
+			for (int i = 1; i < shingles; i++)	//First one is there already from .hashCode function
 			{ //Create k random integers
 				hashes.add(random.nextInt());
 			}			
