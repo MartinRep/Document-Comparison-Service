@@ -75,7 +75,6 @@ public class MinHash implements JobProcessor {
 		for (Object document : result)
 		{
 			documents.add((Document) document);
-			System.out.println(document.toString());
 		}
 		db.close();
 	}

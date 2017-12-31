@@ -48,29 +48,10 @@ public class PollHandler extends HttpServlet {
 			// Getting result value as well removing it from shared Hashmap
 			Results results = outQueue.remove(jobNumber);
 			//Display results
-			//out.printf("<p  align=\"center\"><b>%s</b>: <div style=\"white-space: pre-wrap;\">%s</div></p>",word, result);
-			out.print("<head>\n" + 
-					"<style>\n" + 
-					"table {\n" + 
-					"    font-family: arial, sans-serif;\n" + 
-					"    border-collapse: collapse;\n" + 
-					"    width: 100%;\n" + 
-					"}\n" + 
-					"\n" + 
-					"td, th {\n" + 
-					"    border: 1px solid #dddddd;\n" + 
-					"    text-align: left;\n" + 
-					"    padding: 8px;\n" + 
-					"}\n" + 
-					"\n" + 
-					"tr:nth-child(even) {\n" + 
-					"    background-color: #dddddd;\n" + 
-					"}\n" + 
-					"</style>\n" + 
-					"</head>\n" + 
-					"<body>\n" + 
-					"\n" + 
-					"<table>");
+			String cssLocation = request.getContextPath() + "/css/results.css";
+		    String cssTag = "<link rel='stylesheet' type='text/css' href='" + cssLocation + "'>";
+			out.printf("<html><head>%s</head><body>", cssTag);		 
+			out.print("<table>");
 			out.printf("<h1 align=\"center\"><b>%s</b></h1>" , title);
 			out.print("<tr><th>Document title</th><th>Similarity</th></tr>");
 			for(String docTitle : results.getDocuments())
@@ -95,6 +76,7 @@ public class PollHandler extends HttpServlet {
 			out.println();
 			out.printf("<p  align=\"center\">Job Number: <b>%d</b></p>",jobNumber);
 		}
+		out.print("</body></html>");
 	}
 
 	/**
