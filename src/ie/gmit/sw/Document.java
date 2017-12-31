@@ -1,6 +1,7 @@
 package ie.gmit.sw;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 public class Document
 {
@@ -16,6 +17,8 @@ public class Document
 	{
 		super();
 		this.title = title;
+		minHashes = new TreeSet<>();
+		hashFunctions = new TreeSet<>();
 	}
 	
 	public Document(String title, Set<Integer> minHashes, Set<Integer> hashFunctions)

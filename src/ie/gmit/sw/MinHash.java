@@ -9,8 +9,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
-
-import com.db4o.Db4o;
+import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Query;
@@ -23,6 +22,7 @@ public class MinHash implements JobProcessor {
 	private int shingles = 299;
 	private static ArrayBlockingQueue<String> servLog;
 	private List<Document> documents = new ArrayList<>();
+	ObjectContainer db;
 	
 	public MinHash() 
 	{
@@ -40,6 +40,16 @@ public class MinHash implements JobProcessor {
 			Set<Integer> hashes = getHashes(words);
 			document.setHashFunctions(getHashFunctions());
 			generateMinHashes(hashes, document.getHashFunctions());
+			// Compare document against documents
+			db = Db4oEmbedded.openFile(dbFile);
+			documents.add(document);
+			db.store(documents);
+			servLog.offer("Documents saved.");
+			db.close();
+			// First run, just save the document. No comparing
+			if(documents.isEmpty()) 
+			{
+			}
 			// compare minHashes of every document and add each Result to Results object.
 		} catch (IOException e) {
 			servLog.offer(String.format("MinHash caused exception processing %s Error: %s", job.getTitle(), e.getMessage()));
@@ -48,17 +58,18 @@ public class MinHash implements JobProcessor {
 		return null;
 	}
 
-	@SuppressWarnings("deprecation")
 	private void retreiveDocuments()
 	{
-		ObjectContainer db = Db4o.openFile(dbFile);
+		db = Db4oEmbedded.openFile(dbFile);
 		Query query = db.query();
 		query.constrain(Document.class);
 		ObjectSet<Document> result = query.execute();
 		for (Object document : result)
 		{
 			documents.add((Document) document);
+			System.out.println(document.toString());
 		}
+		db.close();
 	}
 	
 	private Set<String> getWords(BufferedReader document) throws IOException
