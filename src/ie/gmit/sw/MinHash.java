@@ -16,13 +16,14 @@ import com.db4o.query.Query;
 
 public class MinHash implements JobProcessor {
 
-	Document document;
-	Results results;
+	private Document document;
+	private Results results;
 	private static String dbFile = "MinHash.d4o";
 	private int shingles = 300;
 	private static ArrayBlockingQueue<String> servLog;
 	private List<Document> documents = new ArrayList<>();
-	ObjectContainer db;
+	private ObjectContainer db;
+	private boolean alreadyExist = false; 
 	
 	public MinHash() 
 	{
@@ -41,32 +42,31 @@ public class MinHash implements JobProcessor {
 			document.setHashFunctions(getHashFunctions());
 			generateMinHashes(hashes, document.getHashFunctions());
 			// Compare document against documents
-			// HERE.
 			for(Document tmpDocument : documents)
 			{
 				Set<Integer> retainAll = new TreeSet<>(document.getMinHashes());
 				retainAll.retainAll(tmpDocument.getMinHashes());
 				float similarity = (retainAll.size() / shingles) * 100;
+				// Prevent duplicate saving
+				if(similarity == 100.0 && job.getTitle().equals(tmpDocument.getTitle())) alreadyExist = true;
 				results.AddResult(tmpDocument.getTitle(), String.valueOf(similarity));
-				System.out.printf("Result for Document %s is: %s", tmpDocument.getTitle(), results.GetResult(tmpDocument.getTitle()));
+				results.AddDocTitle(tmpDocument.getTitle());
+				System.out.printf("Result for Document %s is: %s %% \n", tmpDocument.getTitle(), results.GetResult(tmpDocument.getTitle()));
 			}
 			System.out.println(results.GetResultsCount());
-			
-			
-			db = Db4oEmbedded.openFile(dbFile);
-			db.store(document);
-			servLog.offer("Document saved.");
-			db.close();
-			// First run, just save the document. No comparing
-			if(documents.isEmpty()) 
+			if(!alreadyExist)	//Prevent duplicate saving
 			{
+				db = Db4oEmbedded.openFile(dbFile);
+				db.store(document);
+				servLog.offer("Document saved.");
+				db.close();				
 			}
 			// compare minHashes of every document and add each Result to Results object.
 		} catch (IOException e) {
 			servLog.offer(String.format("MinHash caused exception processing %s Error: %s", job.getTitle(), e.getMessage()));
 		}
 		
-		return null;
+		return results;
 	}
 
 	private void retreiveDocuments()

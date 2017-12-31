@@ -7,14 +7,14 @@ public class Results
 {
 	private int jobNumber;
 	private String title;
-	private ArrayList<String> docs;
+	private ArrayList<String> docTitles;
 	private HashMap<String, String> docsResults;
 	
 	public Results(int jobNumber, String documentName) {
 		super();
 		this.jobNumber = jobNumber;
 		this.title = documentName;
-		docs = new ArrayList<>();
+		docTitles = new ArrayList<>();
 		docsResults = new HashMap<>();
 	}
 	
@@ -28,9 +28,9 @@ public class Results
 		return title;
 	}
 	
-	public void AddResult(String document, String result)
+	public void AddResult(String title, String result)
 	{
-		docsResults.put(document, result);
+		docsResults.put(title, result);
 	}
 	
 	public int GetResultsCount()
@@ -38,14 +38,14 @@ public class Results
 		return docsResults.size();
 	}
 	
-	public void AddDoc(String title)
+	public void AddDocTitle(String title)
 	{
-		docs.add(title);
+		docTitles.add(title);
 	}
 	
 	public ArrayList<String> GetDocs()
 	{
-		return docs;
+		return docTitles;
 	}
 	
 	public String GetResult(String title)

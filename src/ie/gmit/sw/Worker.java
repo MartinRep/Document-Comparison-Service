@@ -29,8 +29,8 @@ public class Worker implements Runnable
 			servLog.offer(String.format("Worker number %d start work on job number: %d", workerNumber, job.getJobNumber()));
 			JobProcessor jobProcessor = new MinHash();
 			results = jobProcessor.processJob(job);
-			// add Result into outQueue
-			//outQueue.put(job.getJobNumber(), results);
+			//add Result into outQueue
+			outQueue.put(job.getJobNumber(), results);
 		} catch (InterruptedException e) {
 			servLog.offer(String.format("Worker number: %d processing job number: %d, Document: %s caused error: %s", workerNumber,
 					job.getJobNumber(), job.getTitle(), e.getMessage()));
