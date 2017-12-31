@@ -46,7 +46,7 @@ public class MinHash implements JobProcessor {
 			{
 				Set<Integer> retainAll = new TreeSet<>(document.getMinHashes());
 				retainAll.retainAll(tmpDocument.getMinHashes());
-				float similarity = (retainAll.size() / shingles) * 100;
+				double similarity = (double) retainAll.size() / shingles * 100;
 				// Prevent duplicate saving
 				if(similarity == 100.0 && job.getTitle().equals(tmpDocument.getTitle())) alreadyExist = true;
 				results.AddResult(tmpDocument.getTitle(), String.valueOf(similarity));
