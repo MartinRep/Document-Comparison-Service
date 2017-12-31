@@ -2,53 +2,48 @@ package ie.gmit.sw;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 public class Results 
 {
 	private int jobNumber;
 	private String title;
-	private ArrayList<String> docTitles;
 	private HashMap<String, String> docsResults;
 	
 	public Results(int jobNumber, String documentName) {
 		super();
 		this.jobNumber = jobNumber;
 		this.title = documentName;
-		docTitles = new ArrayList<>();
 		docsResults = new HashMap<>();
 	}
 	
-	public int GetJobNumber()
+	public int getJobNumber()
 	{
 		return jobNumber;
 	}
 	
-	public String GetTitle()
+	public String getTitle()
 	{
 		return title;
 	}
 	
-	public void AddResult(String title, String result)
+	public void addResult(String title, String result)
 	{
 		docsResults.put(title, result);
 	}
 	
-	public int GetResultsCount()
+	public Set<String> getDocuments()
+	{
+		return docsResults.keySet();
+	}
+	
+	public int getResultsCount()
 	{
 		return docsResults.size();
 	}
 	
-	public void AddDocTitle(String title)
-	{
-		docTitles.add(title);
-	}
 	
-	public ArrayList<String> GetDocs()
-	{
-		return docTitles;
-	}
-	
-	public String GetResult(String title)
+	public String getResult(String title)
 	{
 		return docsResults.get(title);
 	}

@@ -70,9 +70,10 @@ public class UploadHandler extends HttpServlet
 		} catch (InterruptedException e) {
 			servLog.offer(String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
 		}
-		request.setAttribute("jobNumber", jobNumber);
-		request.setAttribute("title", title);
-		request.getRequestDispatcher("/poll.jsp").forward(request, response);
+//		request.setAttribute("jobNumber", jobNumber);
+//		request.setAttribute("title", title);
+//		request.getRequestDispatcher("/poll").forward(request, response);
+		response.sendRedirect("poll?title=" + title + "&jobNumber="+ jobNumber);
 	}
 	
 	/**

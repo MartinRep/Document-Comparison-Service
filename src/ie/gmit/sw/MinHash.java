@@ -49,11 +49,8 @@ public class MinHash implements JobProcessor {
 				double similarity = (double) retainAll.size() / shingles * 100;
 				// Prevent duplicate saving
 				if(similarity == 100.0 && job.getTitle().equals(tmpDocument.getTitle())) alreadyExist = true;
-				results.AddResult(tmpDocument.getTitle(), String.valueOf(similarity));
-				results.AddDocTitle(tmpDocument.getTitle());
-				System.out.printf("Result for Document %s is: %s %% \n", tmpDocument.getTitle(), results.GetResult(tmpDocument.getTitle()));
+				results.addResult(tmpDocument.getTitle(), String.valueOf(similarity));
 			}
-			System.out.println(results.GetResultsCount());
 			if(!alreadyExist)	//Prevent duplicate saving
 			{
 				db = Db4oEmbedded.openFile(dbFile);

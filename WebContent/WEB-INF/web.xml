@@ -5,15 +5,15 @@
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
   <servlet>
-   	<servlet-name>ie.gmit.sw.UploadHandler</servlet-name>
-   	<servlet-class>ie.gmit.sw.UploadHandler</servlet-class>
-	<init-param>
-  		<param-name>workers</param-name>
-  		<param-value>10</param-value>
-	</init-param>
-	<init-param>
-  		<param-name>logFile</param-name>
-  		<param-value>/home/bigrepo/workspace/Document-Comparison-Service/WebContent/logs/server.log</param-value>
-	</init-param>
-</servlet>
+    <servlet-name>ie.gmit.sw.UploadHandler</servlet-name>
+    <servlet-class>ie.gmit.sw.UploadHandler</servlet-class>
+    <init-param>
+      <param-name>workers</param-name>
+      <param-value>10</param-value>
+    </init-param>
+    <init-param>
+      <param-name>logFile</param-name>
+      <param-value>/home/bigrepo/workspace/Document-Comparison-Service/WebContent/logs/server.log</param-value>
+    </init-param>
+  </servlet>
 </web-app>
