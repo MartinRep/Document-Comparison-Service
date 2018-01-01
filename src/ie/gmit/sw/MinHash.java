@@ -12,18 +12,23 @@ import java.util.concurrent.ArrayBlockingQueue;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.db4o.config.EmbeddedConfiguration;
 import com.db4o.query.Query;
+
+import xtea_db4o.XTeaEncryptionStorage;
 
 public class MinHash implements JobProcessor {
 
 	private Document document;
 	private Results results;
-	private static String dbFile = "MinHash.d4o";
+	private static String dbFile = "MinHashEncrypt.Xtea";
 	private int shingles = 300;
 	private static ArrayBlockingQueue<String> servLog;
 	private List<Document> documents = new ArrayList<>();
 	private ObjectContainer db;
-	private boolean alreadyExist = false; 
+	private boolean alreadyExist = false;
+	private EmbeddedConfiguration config;
+	private static final String password = "Top secret";
 	
 	public MinHash() 
 	{
@@ -53,7 +58,9 @@ public class MinHash implements JobProcessor {
 			}
 			if(!alreadyExist)	//Prevent duplicate saving
 			{
-				db = Db4oEmbedded.openFile(dbFile);
+				config = Db4oEmbedded.newConfiguration();
+				config.file().storage(new XTeaEncryptionStorage(password));
+				db = Db4oEmbedded.openFile(config, dbFile);
 				db.store(document);
 				servLog.offer("Document saved.");
 				db.close();				
@@ -68,7 +75,9 @@ public class MinHash implements JobProcessor {
 
 	private void retreiveDocuments()
 	{
-		db = Db4oEmbedded.openFile(dbFile);
+		config = Db4oEmbedded.newConfiguration();
+		config.file().storage(new XTeaEncryptionStorage(password));
+		db = Db4oEmbedded.openFile(config, dbFile);
 		Query query = db.query();
 		query.constrain(Document.class);
 		ObjectSet<Document> result = query.execute();

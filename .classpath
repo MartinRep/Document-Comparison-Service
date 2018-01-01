@@ -15,5 +15,6 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/db40"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/db4o-8.0.249.16098-all-java5.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/xtea_db4o_8.0.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

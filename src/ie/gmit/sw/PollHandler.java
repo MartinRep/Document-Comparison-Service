@@ -43,8 +43,11 @@ public class PollHandler extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		String title = request.getParameter("title");
 		int jobNumber = Integer.parseInt(request.getParameter("jobNumber"));
-		if(outQueue.size() > 0 && outQueue.containsKey(jobNumber))
+		if(outQueue.size() > 0) 
 		{
+			if(outQueue.containsKey(jobNumber))
+			{
+				
 			// Getting result value as well removing it from shared Hashmap
 			Results results = outQueue.remove(jobNumber);
 			//Display results
@@ -68,6 +71,8 @@ public class PollHandler extends HttpServlet {
 			out.print("</table></div>");
 			//Home button
 			out.printf("<p  align=\"center\"><button onclick=\"window.location.href=' /Document-Comparison-Service/'\">Home</button></p>");
+			out.print("</body></html>");
+			}
 			
 		} else
 		{
@@ -76,7 +81,7 @@ public class PollHandler extends HttpServlet {
 			out.println();
 			out.printf("<p  align=\"center\">Job Number: <b>%d</b></p>",jobNumber);
 		}
-		out.print("</body></html>");
+		
 	}
 
 	/**
