@@ -14,7 +14,7 @@
 			<legend><h3>Document Comparison Service</h3></legend>
 			<b>Document Title :</b><br>
 			<input id="title" name="txtTitle" type="text" 
-			placeholder="Please enter the Document title here" size="50" />
+			placeholder="Please Choose File first" size="50" />
 			<p/>
 			<p id="error"><font color="RED">${message}</font></p>
 			<input id="file" type="file" name="txtDocument"/>

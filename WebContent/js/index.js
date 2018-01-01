@@ -12,7 +12,12 @@ jQuery.fn.existsWithValue = function()
 function Init()
 {
 	$("#title").keypress(function() {Validate();});
-	$("#file").change(function() {Validate();});
+	$("#file").change(function() {
+		var file = document.getElementById('file');
+		var fileName = file.files.item(0).name;
+		$("#title").val(fileName);
+		console.log(fileName);
+		Validate();});
 	console.log("Listeners active..");
 }
 	

@@ -17,7 +17,7 @@ import javax.servlet.http.Part;
  * Servlet implementation class UploadHandler
  */
 @WebServlet(asyncSupported = true, description = "Handles new document file upload", urlPatterns = { "/upload" })
-@MultipartConfig(fileSizeThreshold=1024*1024*5, // 2MB. The file size in bytes after which the file will be temporarily stored on disk. The default size is 0 bytes.
+@MultipartConfig(fileSizeThreshold=1024*1024*2, // 2MB. The file size in bytes after which the file will be temporarily stored on disk. The default size is 0 bytes.
 maxFileSize=1024*1024*50,      // 50MB. The maximum size allowed for uploaded files, in bytes
 maxRequestSize=1024*1024*51)   // 51MB. he maximum size allowed for a multipart/form-data request, in bytes.
 public class UploadHandler extends HttpServlet 
@@ -73,6 +73,7 @@ public class UploadHandler extends HttpServlet
 //		request.setAttribute("jobNumber", jobNumber);
 //		request.setAttribute("title", title);
 //		request.getRequestDispatcher("/poll").forward(request, response);
+		// Changes browser URL as well, so refresh will remember parameters
 		response.sendRedirect("poll?title=" + title + "&jobNumber="+ jobNumber);
 	}
 	
