@@ -38,7 +38,6 @@ public class Util
 		try
 		{
 			ThreadPoolService.initThreadPool(Worker.class ,numOfWorkers);
-			logMessage("ThreadPool of size: "+ numOfWorkers +" initialized.");
 		} catch (Exception e)
 		{
 			Util.logMessage("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
@@ -114,9 +113,9 @@ public class Util
 	public static void shutdown()
 	{
 		ThreadPoolService.shutDown();
-		if(Util.isLoggingON()) LogService.shutdown();
 		logMessage(String.format("Total jobs processed: %d", jobNumber));
 		logMessage(String.format("Total workers spawned: %d", workerNumber));
+		if(Util.isLoggingON()) LogService.shutdown();
 	}
 
 	@Override

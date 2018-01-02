@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Worker implements Runnable 
+public class Worker extends HeavyWorker 
 {
 
 	private static ArrayBlockingQueue<Job> inQueue;

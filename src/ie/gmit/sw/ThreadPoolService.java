@@ -10,12 +10,11 @@ public class ThreadPoolService
 	@SuppressWarnings("rawtypes")
 	public static void initThreadPool(Class workerClass, int numOfWorkers) throws Exception
 	{
-		//initialization of workers thread pool. The size determined in web.xml.
 		executor = Executors.newFixedThreadPool(numOfWorkers);
-		// Population of Thread pool
+		HeavyWorker heavyWorker = (HeavyWorker) workerClass.newInstance();
 		for (int i = 0; i < numOfWorkers; i++) 
 		{
-			Runnable worker = (Runnable) workerClass.newInstance();
+			Runnable worker = (Runnable) heavyWorker.clone();
 			executor.execute(worker);
 		}
 		Util.logMessage(String.format("Thread Pool initialized with %d workers", numOfWorkers));
@@ -24,6 +23,7 @@ public class ThreadPoolService
 	public static void shutDown()
 	{
 		executor.shutdown();
+		Util.logMessage("ThreadPool Shutdown.");
 	}
 
 	@Override
@@ -32,7 +32,4 @@ public class ThreadPoolService
 		ThreadPoolService.shutDown();
 		super.finalize();
 	}
-	
-	
-
 }
