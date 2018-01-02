@@ -38,11 +38,6 @@ public class ProcessDocument
 		}
 		return wordsHashes;
 	}
-	
-	public int getMinHash()
-	{
-		return minHash;
-	}
 
 	//Create nimOfHashes amount of random integers used for XOR hashFunctions
 	public Set<Integer> getHashFunctions(int numOfHashes) 
@@ -54,6 +49,11 @@ public class ProcessDocument
 			hashFunctions.add(random.nextInt());
 		}			
 	    return hashFunctions;
+	}
+	
+	public int getMinHash()
+	{
+		return minHash;
 	}
 	
 	public HashMap<String, String> compareDocument(Document document, List<Document> documents)

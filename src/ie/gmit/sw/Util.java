@@ -15,8 +15,8 @@ public class Util
 	private static volatile int workerNumber = 0;
 	private static ArrayBlockingQueue<String> servLog;
 	private static int shingles;
-	private static String dbFile, password;
 	private static DocumentDAO db;
+	private static boolean loggingON = false;
 	
 	private Util(int numOfWorkers)
 	{
@@ -100,24 +100,14 @@ public class Util
 		Util.db = db;
 	}
 
-	public static String getDbFile()
+	public static boolean isLoggingON()
 	{
-		return dbFile;
+		return loggingON;
 	}
 
-	public static void setDbFile(String dbFile)
+	public static void setLoggingON(boolean loggingON)
 	{
-		Util.dbFile = dbFile;
-	}
-
-	public static String getPassword()
-	{
-		return password;
-	}
-
-	public static void setPassword(String password)
-	{
-		Util.password = password;
+		Util.loggingON = loggingON;
 	}
 
 	// Safe shutting down of thread pool, to avoid possible memory leaks

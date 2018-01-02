@@ -31,9 +31,7 @@ public class Db4oController implements DocumentDAO
 	{
 		super();
 		this.fileName = fileName;
-		this.password = password;
-		config = Db4oEmbedded.newConfiguration();
-		config.file().storage(new XTeaEncryptionStorage(password)); 
+		this.password = password; 
 	}
 	
 	@Override
@@ -44,14 +42,17 @@ public class Db4oController implements DocumentDAO
 	
 	private void logMessage(String message)
 	{
-		if(servLog != null) servLog.offer(message);
+		if(Util.isLoggingON()) servLog.offer(message);
 	}
 
 	@Override
 	public List<Document> getDocuments()
 	{
 		List<Document> documents = new ArrayList<>();
+		config = Db4oEmbedded.newConfiguration();
+		config.file().storage(new XTeaEncryptionStorage(password));
 		db = Db4oEmbedded.openFile(config, fileName);
+		logMessage("db File name:" + fileName);
 		Query query = db.query();
 		query.constrain(Document.class);
 		ObjectSet<Document> result = query.execute();
@@ -67,6 +68,8 @@ public class Db4oController implements DocumentDAO
 	@Override
 	public void storeDocument(Document document)
 	{
+		config = Db4oEmbedded.newConfiguration();
+		config.file().storage(new XTeaEncryptionStorage(password));
 		db = Db4oEmbedded.openFile(config, fileName);
 		db.store(document);
 		logMessage("Document saved.");

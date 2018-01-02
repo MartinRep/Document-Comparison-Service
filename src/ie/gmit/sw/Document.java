@@ -54,16 +54,6 @@ public class Document
 		this.hashFunctions = hashFunctions;
 	}
 	
-	public void addMinHash(int minHash)
-	{
-		minHashes.add(minHash);
-	}
-	
-	public void addHashFunction(int hashFunction)
-	{
-		this.hashFunctions.add(hashFunction);
-	}
-	
 	public int getHashFunctionsSize()
 	{
 		return this.hashFunctions.size();

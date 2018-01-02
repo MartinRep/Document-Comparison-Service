@@ -25,7 +25,6 @@ public class UploadHandler extends HttpServlet
 	private static final long serialVersionUID = 465419841991L;
 	private static ArrayBlockingQueue<Job> inQueue;
 	private static ArrayBlockingQueue<String> servLog;
-	private static boolean loggingON;
        
 	/**
 	 * @see Servlet#init(ServletConfig)
@@ -38,13 +37,20 @@ public class UploadHandler extends HttpServlet
 		String dbFile = config.getInitParameter("dbFile");
 		String password = config.getInitParameter("password");
 		int shingles = Integer.parseInt(config.getInitParameter("shingles"));
-		loggingON = Boolean.parseBoolean(config.getInitParameter("logging"));
+		boolean loggingON = Boolean.parseBoolean(config.getInitParameter("logging"));
 		// Singleton variables share initialization. Has to be First thing to init.
 		Util.init(numOfWorkers);
-		Util.setDb((DocumentDAO) new Db4oController(dbFile, password));
+		Util.setLoggingON(loggingON);
+		// This will allow to change dataBase via web.xml config file eventually.
+		DocumentDAO db = (DocumentDAO) new Db4oController(dbFile, password);
+		Util.setDb(db);
 		Util.setShingles(shingles);
 		// Initialing Logging service to listen on servLog ArrayBlockingQueue messages and write to file logFile.
-		if(loggingON) LogService.init(Util.getServLog() ,logFile);
+		if(loggingON)
+		{
+			LogService.init(Util.getServLog() ,logFile);
+			db.setLogging(Util.getServLog());
+		}
 		// Getting ArrayBlockingQueue for log entries
 		servLog = Util.getServLog();
 		inQueue = Util.getInQueue();
@@ -85,7 +91,7 @@ public class UploadHandler extends HttpServlet
 	
 	private void logMessage(String message)
 	{
-		if(loggingON)servLog.offer(message);
+		if(Util.isLoggingON())servLog.offer(message);
 	}
 	
 	/**
@@ -94,7 +100,7 @@ public class UploadHandler extends HttpServlet
 	public void destroy() 
 	{
 		Util.shutdown();
-		LogService.shutdown();
+		if(Util.isLoggingON()) LogService.shutdown();
 	}
 
 	@Override
