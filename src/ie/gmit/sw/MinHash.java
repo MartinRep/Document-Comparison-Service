@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class MinHash{
 
@@ -16,11 +15,6 @@ public class MinHash{
 	{
 		this.db = db;
 		pd = new ProcessDocument();
-	}
-	
-	public void setLogging(ArrayBlockingQueue<String> servLog)
-	{
-		db.setLogging(servLog);
 	}
 
 	public List<Document> retreiveDocuments()

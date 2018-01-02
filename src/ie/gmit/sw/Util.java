@@ -2,15 +2,12 @@ package ie.gmit.sw;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Util 
 {
 	private static ArrayBlockingQueue<Job> inQueue;
 	private static ConcurrentHashMap<Integer, Results> outQueue;
 	private static Util instance;
-	private static ExecutorService executor;
 	private static volatile int jobNumber = 0;
 	private static volatile int workerNumber = 0;
 	private static ArrayBlockingQueue<String> servLog;
@@ -18,37 +15,34 @@ public class Util
 	private static DocumentDAO db;
 	private static boolean loggingON = false;
 	
-	private Util(int numOfWorkers)
+	private Util()
 	{
-		// Shared variables initialization
-		inQueue = new ArrayBlockingQueue<>(numOfWorkers);
-		outQueue = new ConcurrentHashMap<>();
-		servLog = new ArrayBlockingQueue<>(numOfWorkers);
-		initThreadPool(numOfWorkers);
-		logMessage("Utility initialized.");
 	}
 	
 	// Singleton
-	public static synchronized Util init(int numOfWorkers)
+	public static synchronized Util init()
 	{
 		if(instance == null)
 		{
-			instance = new Util(numOfWorkers);
+			instance = new Util();
 		}
 		return instance;
 	}
 	
 	public static void initThreadPool(int numOfWorkers)
 	{
+		inQueue = new ArrayBlockingQueue<>(numOfWorkers);
+		servLog = new ArrayBlockingQueue<>(numOfWorkers);
+		outQueue = new ConcurrentHashMap<>();
 		//initialization of workers thread pool. The size determined in web.xml.
-		executor = Executors.newFixedThreadPool(numOfWorkers);
-		// Population of Thread pool
-		for (int i = 0; i < numOfWorkers; i++) 
+		try
 		{
-			Runnable worker = new Worker();
-			executor.execute(worker);
+			ThreadPoolService.initThreadPool(Worker.class ,numOfWorkers);
+			logMessage("ThreadPool of size: "+ numOfWorkers +" initialized.");
+		} catch (Exception e)
+		{
+			Util.logMessage("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
 		}
-		logMessage(String.format("Thread Pool initialized with %d workers", numOfWorkers));
 	}
 	
 	public static ArrayBlockingQueue<Job> getInQueue()
@@ -111,7 +105,7 @@ public class Util
 		Util.loggingON = loggingON;
 	}
 	
-	private static void logMessage(String message)
+	public static void logMessage(String message)
 	{
 		if(Util.isLoggingON())servLog.offer(message);
 	}
@@ -119,7 +113,8 @@ public class Util
 	// Safe shutting down of thread pool, to avoid possible memory leaks
 	public static void shutdown()
 	{
-		executor.shutdown();
+		ThreadPoolService.shutDown();
+		if(Util.isLoggingON()) LogService.shutdown();
 		logMessage(String.format("Total jobs processed: %d", jobNumber));
 		logMessage(String.format("Total workers spawned: %d", workerNumber));
 	}

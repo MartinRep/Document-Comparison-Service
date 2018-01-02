@@ -15,14 +15,16 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class PollHandler
  */
 @WebServlet(description = "Handles Pooling and displaying Results", urlPatterns = { "/poll" })
-public class PollHandler extends HttpServlet {
+public class PollHandler extends HttpServlet 
+{
 	private static final long serialVersionUID = 42423443566L;
 	private static ConcurrentHashMap<Integer, Results> outQueue;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public PollHandler() {
+    public PollHandler() 
+    {
         super();
     }
 
@@ -30,8 +32,7 @@ public class PollHandler extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
-		outQueue = Util.getOutQueue();
-		
+		if(Util.getInQueue() != null) outQueue = Util.getOutQueue();	
 	}
 
 
@@ -39,7 +40,8 @@ public class PollHandler extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		PrintWriter out = response.getWriter();
 		String title = request.getParameter("title");
 		int jobNumber = Integer.parseInt(request.getParameter("jobNumber"));
@@ -87,7 +89,8 @@ public class PollHandler extends HttpServlet {
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
+	{
 		doGet(request, response);
 	}
 

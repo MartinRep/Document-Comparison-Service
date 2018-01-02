@@ -24,7 +24,6 @@ public class UploadHandler extends HttpServlet
 {
 	private static final long serialVersionUID = 465419841991L;
 	private static ArrayBlockingQueue<Job> inQueue;
-	private static ArrayBlockingQueue<String> servLog;
        
 	/**
 	 * @see Servlet#init(ServletConfig)
@@ -39,23 +38,21 @@ public class UploadHandler extends HttpServlet
 		int shingles = Integer.parseInt(config.getInitParameter("shingles"));
 		boolean loggingON = Boolean.parseBoolean(config.getInitParameter("logging"));
 		// Singleton variables share initialization. Has to be First thing to init.
-		Util.init(numOfWorkers);
+		Util.init();
 		Util.setLoggingON(loggingON);
+		Util.initThreadPool(numOfWorkers);
 		// This will allow to change dataBase via web.xml config file eventually.
 		DocumentDAO db = (DocumentDAO) new Db4oController(dbFile, password);
 		Util.setDb(db);
 		Util.setShingles(shingles);
 		// Initialing Logging service to listen on servLog ArrayBlockingQueue messages and write to file logFile.
-		if(loggingON)
+		if(Util.isLoggingON())
 		{
 			LogService.init(Util.getServLog() ,logFile);
-			db.setLogging(Util.getServLog());
 		}
-		// Getting ArrayBlockingQueue for log entries
-		servLog = Util.getServLog();
 		inQueue = Util.getInQueue();
 		// Servlet first log entry
-		logMessage("Upload Servlet initialized");
+		Util.logMessage("Upload Servlet initialized");
 	}
 
 	/**
@@ -80,7 +77,7 @@ public class UploadHandler extends HttpServlet
 		try {
 			inQueue.put(job);
 		} catch (InterruptedException e) {
-			logMessage(String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
+			Util.logMessage(String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
 		}
 		// Changes browser URL as well, so refresh will remember parameters, lazy way. Instead of hidden form
 //		request.setAttribute("jobNumber", jobNumber);
@@ -89,18 +86,12 @@ public class UploadHandler extends HttpServlet
 		response.sendRedirect("poll?title=" + title + "&jobNumber="+ jobNumber);
 	}
 	
-	private void logMessage(String message)
-	{
-		if(Util.isLoggingON())servLog.offer(message);
-	}
-	
 	/**
 	 * @see Servlet#destroy()
 	 */
 	public void destroy() 
 	{
 		Util.shutdown();
-		if(Util.isLoggingON()) LogService.shutdown();
 	}
 
 	@Override
@@ -108,7 +99,4 @@ public class UploadHandler extends HttpServlet
 		destroy();
 		super.finalize();
 	}
-	
-	
-
 }
