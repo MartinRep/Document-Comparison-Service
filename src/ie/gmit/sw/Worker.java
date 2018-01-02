@@ -29,7 +29,6 @@ public class Worker implements Runnable
 			job = inQueue.take();
 			logMessage(String.format("Worker number %d start work on job number: %d", workerNumber, job.getJobNumber()));
 			MinHash minHash = new MinHash(Util.getDb());
-			//results = minHash.processJob(job);
 			try {
 				documents = minHash.retreiveDocuments();
 				document = new Document(job.getTitle());
