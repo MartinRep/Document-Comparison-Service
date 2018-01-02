@@ -13,7 +13,7 @@ public class LogService {
 	private static LogService instance;
 	private static boolean stop = false;
 	
-	private LogService(ArrayBlockingQueue<String> servLog, String logFile)
+	private LogService(ArrayBlockingQueue<String> servLog ,String logFile)
 	{
 		LogService.logFile = logFile;
 		LogService.servLog = servLog;
@@ -29,11 +29,11 @@ public class LogService {
         dLogger.start();
 	}
 	
-	public static synchronized LogService init( ArrayBlockingQueue<String> servLog, String logFile)
+	public static synchronized LogService init(ArrayBlockingQueue<String> servLog,String logFile)
 	{
 		if(instance == null)
 		{
-			instance = new LogService(servLog, logFile);
+			instance = new LogService(servLog ,logFile);
 		}
 		return instance;
 	}

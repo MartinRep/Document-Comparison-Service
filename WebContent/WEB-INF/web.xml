@@ -15,5 +15,21 @@
       <param-name>logFile</param-name>
       <param-value>/home/bigrepo/workspace/Document-Comparison-Service/WebContent/logs/server.log</param-value>
     </init-param>
+    <init-param>
+      <param-name>dbFile</param-name>
+      <param-value>/home/bigrepo/workspace/Document-Comparison-Service/WebContent/db/documets.db</param-value>
+    </init-param>
+    <init-param>
+      <param-name>password</param-name>
+      <param-value>Top secret</param-value>
+    </init-param>
+    <init-param>
+      <param-name>shingles</param-name>
+      <param-value>300</param-value>
+    </init-param>
+    <init-param>
+      <param-name>logging</param-name>
+      <param-value>true</param-value>
+    </init-param>
   </servlet>
 </web-app>

@@ -1,5 +1,8 @@
-# Server log file
+# Server log files
 /WebContent/logs
+
+# Database files
+/WebContent/db
 
 # Compiled class file
 *.class

@@ -5,22 +5,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class WorkersHandler 
+public class Util 
 {
 	private static ArrayBlockingQueue<Job> inQueue;
 	private static ConcurrentHashMap<Integer, Results> outQueue;
-	private static WorkersHandler instance;
+	private static Util instance;
 	private static ExecutorService executor;
 	private static volatile int jobNumber = 0;
 	private static volatile int workerNumber = 0;
 	private static ArrayBlockingQueue<String> servLog;
+	private static int shingles;
+	private static String dbFile, password;
+	private static DocumentDAO db;
 	
-	private WorkersHandler(int numOfWorkers)
+	private Util(int numOfWorkers)
 	{
 		// Shared variables initialization
 		inQueue = new ArrayBlockingQueue<>(numOfWorkers);
 		outQueue = new ConcurrentHashMap<>();
 		servLog = new ArrayBlockingQueue<>(numOfWorkers);
+		initThreadPool(numOfWorkers);
+		servLog.offer("JobHandler initialized.");
+	}
+	
+	// Singleton
+	public static synchronized Util init(int numOfWorkers)
+	{
+		if(instance == null)
+		{
+			instance = new Util(numOfWorkers);
+		}
+		return instance;
+	}
+	
+	public static void initThreadPool(int numOfWorkers)
+	{
 		//initialization of workers thread pool. The size determined in web.xml.
 		executor = Executors.newFixedThreadPool(numOfWorkers);
 		// Population of Thread pool
@@ -29,17 +48,6 @@ public class WorkersHandler
 			Runnable worker = new Worker();
 			executor.execute(worker);
 		}
-		servLog.offer("JobHandler initialized.");
-	}
-	
-	// Singleton
-	public static synchronized WorkersHandler init(int numOfWorkers)
-	{
-		if(instance == null)
-		{
-			instance = new WorkersHandler(numOfWorkers);
-		}
-		return instance;
 	}
 	
 	public static ArrayBlockingQueue<Job> getInQueue()
@@ -71,6 +79,47 @@ public class WorkersHandler
 		return servLog;
 	}
 	
+	public static int getShingles()
+	{
+		return shingles;
+	}
+
+	public static void setShingles(int shingles)
+	{
+		Util.shingles = shingles;
+	}
+	
+
+	public static DocumentDAO getDb()
+	{
+		return db;
+	}
+
+	public static void setDb(DocumentDAO db)
+	{
+		Util.db = db;
+	}
+
+	public static String getDbFile()
+	{
+		return dbFile;
+	}
+
+	public static void setDbFile(String dbFile)
+	{
+		Util.dbFile = dbFile;
+	}
+
+	public static String getPassword()
+	{
+		return password;
+	}
+
+	public static void setPassword(String password)
+	{
+		Util.password = password;
+	}
+
 	// Safe shutting down of thread pool, to avoid possible memory leaks
 	public static void shutdown()
 	{

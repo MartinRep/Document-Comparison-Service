@@ -30,7 +30,7 @@ public class PollHandler extends HttpServlet {
 	public void init(ServletConfig config) throws ServletException
 	{
 		super.init(config);
-		outQueue = WorkersHandler.getOutQueue();
+		outQueue = Util.getOutQueue();
 		
 	}
 

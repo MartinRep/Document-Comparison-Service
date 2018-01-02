@@ -23,8 +23,9 @@ maxRequestSize=1024*1024*51)   // 51MB. he maximum size allowed for a multipart/
 public class UploadHandler extends HttpServlet 
 {
 	private static final long serialVersionUID = 465419841991L;
-	private ArrayBlockingQueue<Job> inQueue;
-	private ArrayBlockingQueue<String> servLog;
+	private static ArrayBlockingQueue<Job> inQueue;
+	private static ArrayBlockingQueue<String> servLog;
+	private static boolean loggingON;
        
 	/**
 	 * @see Servlet#init(ServletConfig)
@@ -34,16 +35,21 @@ public class UploadHandler extends HttpServlet
 		// gets Initial parameters from web.xml
 		int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
 		String logFile = config.getInitParameter("logFile");
+		String dbFile = config.getInitParameter("dbFile");
+		String password = config.getInitParameter("password");
+		int shingles = Integer.parseInt(config.getInitParameter("shingles"));
+		loggingON = Boolean.parseBoolean(config.getInitParameter("logging"));
 		// Singleton variables share initialization. Has to be First thing to init.
-		WorkersHandler.init(numOfWorkers);
-		// Getting ArrayBlockingQueue for log entries
-		servLog = WorkersHandler.getServLog();
+		Util.init(numOfWorkers);
+		Util.setDb((DocumentDAO) new Db4oController(dbFile, password));
+		Util.setShingles(shingles);
 		// Initialing Logging service to listen on servLog ArrayBlockingQueue messages and write to file logFile.
-		LogService.init(servLog, logFile);
-		inQueue = WorkersHandler.getInQueue();
-		servLog = WorkersHandler.getServLog();
+		if(loggingON) LogService.init(Util.getServLog() ,logFile);
+		// Getting ArrayBlockingQueue for log entries
+		servLog = Util.getServLog();
+		inQueue = Util.getInQueue();
 		// Servlet first log entry
-		servLog.offer("Upload Servlet initialized with workers amount of "+ numOfWorkers);
+		logMessage("Upload Servlet initialized with workers amount of "+ numOfWorkers);
 	}
 
 	/**
@@ -60,7 +66,7 @@ public class UploadHandler extends HttpServlet
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
 	{
-		int jobNumber = WorkersHandler.getJobNumber();
+		int jobNumber = Util.getJobNumber();
 		String title = request.getParameter("txtTitle");
 		Part part = request.getPart("txtDocument");
 		BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
@@ -68,13 +74,18 @@ public class UploadHandler extends HttpServlet
 		try {
 			inQueue.put(job);
 		} catch (InterruptedException e) {
-			servLog.offer(String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
+			logMessage(String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
 		}
+		// Changes browser URL as well, so refresh will remember parameters, lazy way. Instead of hidden form
 //		request.setAttribute("jobNumber", jobNumber);
 //		request.setAttribute("title", title);
 //		request.getRequestDispatcher("/poll").forward(request, response);
-		// Changes browser URL as well, so refresh will remember parameters
 		response.sendRedirect("poll?title=" + title + "&jobNumber="+ jobNumber);
+	}
+	
+	private void logMessage(String message)
+	{
+		if(loggingON)servLog.offer(message);
 	}
 	
 	/**
@@ -82,7 +93,7 @@ public class UploadHandler extends HttpServlet
 	 */
 	public void destroy() 
 	{
-		WorkersHandler.shutdown();
+		Util.shutdown();
 		LogService.shutdown();
 	}
 

@@ -12,7 +12,7 @@ import com.db4o.query.Query;
 
 import xtea_db4o.XTeaEncryptionStorage;
 
-public class Db4oImp implements DocumentDAO
+public class Db4oController implements DocumentDAO
 {
 	ObjectContainer db;
 	EmbeddedConfiguration config;
@@ -20,14 +20,14 @@ public class Db4oImp implements DocumentDAO
 	String password;
 	ArrayBlockingQueue<String> servLog;
 	
-	public Db4oImp(String fileName)
+	public Db4oController(String fileName)
 	{
 		super();
 		this.fileName = fileName;
 		config = Db4oEmbedded.newConfiguration();
 	}
 
-	public Db4oImp(String fileName, String password)
+	public Db4oController(String fileName, String password)
 	{
 		super();
 		this.fileName = fileName;

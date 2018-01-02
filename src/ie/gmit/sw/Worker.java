@@ -20,15 +20,15 @@ public class Worker implements Runnable
 	@Override
 	public void run() 
 	{
-		workerNumber = WorkersHandler.getWorkerNumber();
-		inQueue = WorkersHandler.getInQueue();
-		outQueue = WorkersHandler.getOutQueue();
-		servLog = WorkersHandler.getServLog();
+		workerNumber = Util.getWorkerNumber();
+		inQueue = Util.getInQueue();
+		outQueue = Util.getOutQueue();
+		servLog = Util.getServLog();
 		try {
 			job = inQueue.take();
 			servLog.offer(String.format("Worker number %d start work on job number: %d", workerNumber, job.getJobNumber()));
-			JobProcessor jobProcessor = new MinHash();
-			results = jobProcessor.processJob(job);
+			MinHash minHash = new MinHash(Util.getDb(), Util.getShingles());
+			results = minHash.processJob(job);
 			//add Result into outQueue
 			outQueue.put(job.getJobNumber(), results);
 		} catch (InterruptedException e) {

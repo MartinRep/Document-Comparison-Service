@@ -6,27 +6,32 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class MinHash implements JobProcessor {
+public class MinHash{
 
 	private Document document;
 	private Results results;
-	private static String dbFile = "MinHashEncrypt.Xtea";
-	private int shingles = 300;
+	//private static String dbFile = "MinHashEncrypt.Xtea";
+	private int shingles;
 	private static ArrayBlockingQueue<String> servLog;
 	private List<Document> documents;
-	private static final String password = "Top secret";
+	//private static final String password = "Top secret";
 	private DocumentDAO db;
 	private ProcessDocument pd;
 	
-	public MinHash() 
+	public MinHash(DocumentDAO db, int shingles) 
 	{
-		servLog = WorkersHandler.getServLog();
-		db = (DocumentDAO) new Db4oImp(dbFile, password);
-		db.setLogging(servLog);
+		//servLog = WorkersHandler.getServLog();
+		//db = (DocumentDAO) new Db4oController(dbFile, password);
+		this.db = db;
+		this.shingles = shingles;
 		pd = new ProcessDocument();
 	}
+	
+	public void setLogging(ArrayBlockingQueue<String> servLog)
+	{
+		db.setLogging(servLog);
+	}
 
-	@Override
 	public Results processJob(Job job) 
 	{
 		document = new Document(job.getTitle());
@@ -49,27 +54,27 @@ public class MinHash implements JobProcessor {
 		return results;
 	}
 
-	private List<Document> retreiveDocuments()
+	public List<Document> retreiveDocuments()
 	{
 		return db.getDocuments();
 	}
 	
-	private Set<String> getWords(BufferedReader document) throws IOException
+	public Set<String> getWords(BufferedReader document) throws IOException
 	{
 		return pd.getWords(document);
 	}
 	
-	private Set<Integer> getHashes(Set<String> words)
+	public Set<Integer> getHashes(Set<String> words)
 	{	
 		return pd.getHashes(words);
 	}
 	
-	private Set<Integer> getHashFunctions(int numOfHashes) 
+	public Set<Integer> getHashFunctions(int numOfHashes) 
 	{
 	    return pd.getHashFunctions(numOfHashes);
 	}
 	
-	private Set<Integer> getMinHashes(Set<Integer> hashes, Set<Integer> hashFunctions)
+	public Set<Integer> getMinHashes(Set<Integer> hashes, Set<Integer> hashFunctions)
 	{
 		return pd.getMinHashes(hashes, hashFunctions); 
 	}
