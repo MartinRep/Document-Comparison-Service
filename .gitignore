@@ -1,9 +1,6 @@
 # Server log file
 /WebContent/logs
 
-# Include external Java libs
-!/WebContent/WEB-INF/lib
-
 # Compiled class file
 *.class
 
@@ -24,6 +21,8 @@
 *.tar.gz
 *.rar
 
+# Include external Java libs
+!/WebContent/WEB-INF/lib/*
 
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml

@@ -9,13 +9,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
-import com.db4o.Db4oEmbedded;
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectSet;
-import com.db4o.config.EmbeddedConfiguration;
-import com.db4o.query.Query;
-
-import xtea_db4o.XTeaEncryptionStorage;
 
 public class MinHash implements JobProcessor {
 
@@ -25,14 +18,15 @@ public class MinHash implements JobProcessor {
 	private int shingles = 300;
 	private static ArrayBlockingQueue<String> servLog;
 	private List<Document> documents = new ArrayList<>();
-	private ObjectContainer db;
 	private boolean alreadyExist = false;
-	private EmbeddedConfiguration config;
 	private static final String password = "Top secret";
+	private DocumentDAO db;
 	
 	public MinHash() 
 	{
 		servLog = WorkersHandler.getServLog();
+		db = (DocumentDAO) new Db4oImp(dbFile, password);
+		db.setLogging(servLog);
 	}
 
 	@Override
@@ -58,12 +52,7 @@ public class MinHash implements JobProcessor {
 			}
 			if(!alreadyExist)	//Prevent duplicate saving
 			{
-				config = Db4oEmbedded.newConfiguration();
-				config.file().storage(new XTeaEncryptionStorage(password));
-				db = Db4oEmbedded.openFile(config, dbFile);
-				db.store(document);
-				servLog.offer("Document saved.");
-				db.close();				
+				db.storeDocument(document);	
 			}
 			// compare minHashes of every document and add each Result to Results object.
 		} catch (IOException e) {
@@ -75,17 +64,7 @@ public class MinHash implements JobProcessor {
 
 	private void retreiveDocuments()
 	{
-		config = Db4oEmbedded.newConfiguration();
-		config.file().storage(new XTeaEncryptionStorage(password));
-		db = Db4oEmbedded.openFile(config, dbFile);
-		Query query = db.query();
-		query.constrain(Document.class);
-		ObjectSet<Document> result = query.execute();
-		for (Object document : result)
-		{
-			documents.add((Document) document);
-		}
-		db.close();
+		documents = db.getDocuments();
 	}
 	
 	private Set<String> getWords(BufferedReader document) throws IOException
