@@ -27,9 +27,9 @@ public class Results
 		return title;
 	}
 	
-	public void addResult(String title, String result)
+	public void addResults(HashMap<String, String> results)
 	{
-		docsResults.put(title, result);
+		docsResults.putAll(results);;
 	}
 	
 	public Set<String> getDocuments()
