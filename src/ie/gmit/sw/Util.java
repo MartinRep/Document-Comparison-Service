@@ -25,7 +25,7 @@ public class Util
 		outQueue = new ConcurrentHashMap<>();
 		servLog = new ArrayBlockingQueue<>(numOfWorkers);
 		initThreadPool(numOfWorkers);
-		servLog.offer("JobHandler initialized.");
+		logMessage("Utility initialized.");
 	}
 	
 	// Singleton
@@ -48,6 +48,7 @@ public class Util
 			Runnable worker = new Worker();
 			executor.execute(worker);
 		}
+		logMessage(String.format("Thread Pool initialized with %d workers", numOfWorkers));
 	}
 	
 	public static ArrayBlockingQueue<Job> getInQueue()
@@ -109,13 +110,18 @@ public class Util
 	{
 		Util.loggingON = loggingON;
 	}
+	
+	private static void logMessage(String message)
+	{
+		if(Util.isLoggingON())servLog.offer(message);
+	}
 
 	// Safe shutting down of thread pool, to avoid possible memory leaks
 	public static void shutdown()
 	{
 		executor.shutdown();
-		servLog.offer(String.format("Total jobs processed: %d", jobNumber));
-		servLog.offer(String.format("Total workers spawned: %d", workerNumber));
+		logMessage(String.format("Total jobs processed: %d", jobNumber));
+		logMessage(String.format("Total workers spawned: %d", workerNumber));
 	}
 
 	@Override

@@ -55,7 +55,7 @@ public class UploadHandler extends HttpServlet
 		servLog = Util.getServLog();
 		inQueue = Util.getInQueue();
 		// Servlet first log entry
-		logMessage("Upload Servlet initialized with workers amount of "+ numOfWorkers);
+		logMessage("Upload Servlet initialized");
 	}
 
 	/**
