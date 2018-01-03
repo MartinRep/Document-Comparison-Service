@@ -51,10 +51,12 @@ public class Worker extends HeavyWorker
 				{
 					minHash.storeDocument(document);	
 				}
-			} catch (IOException e) {
+			} catch (IOException e) 
+			{
 				logMessage(String.format("MinHash caused exception processing %s Error: %s", job.getTitle(), e.getMessage()));
 			}
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e) 
+		{
 			logMessage(String.format("Worker number: %d processing job number: %d, Document: %s caused error: %s", workerNumber,
 					job.getJobNumber(), job.getTitle(), e.getMessage()));
 		}
