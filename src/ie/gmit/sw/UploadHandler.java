@@ -47,21 +47,16 @@ public class UploadHandler extends HttpServlet {
 	String password = config.getInitParameter("password");
 	int shingles = Integer.parseInt(config.getInitParameter("shingles"));
 	boolean loggingOn = Boolean.parseBoolean(config.getInitParameter("logging"));
-	// Util.class Singleton class for variables share between Servlet and . Has to be First thing to init.
 	Util.init();
 	Util.setLoggingON(loggingOn);
 	Util.initThreadPool(numOfWorkers);
-	// This will allow to change dataBase via web.xml config file eventually.
 	DocumentDao db = (DocumentDao) new Db4oController(dbFile, password);
 	Util.setDb(db);
 	Util.setShingles(shingles);
-	// Initialing Logging service to listen on servLog ArrayBlockingQueue messages
-	// and write to file logFile.
 	if (Util.isLoggingOn()) {
 	    LogService.init(Util.getServLog(), logFile);
 	}
 	inQueue = Util.getInQueue();
-	// Servlet first log entry
 	Util.logMessage("Upload Servlet initialized");
     }
 
@@ -98,14 +93,11 @@ public class UploadHandler extends HttpServlet {
 	}
 	// Changes browser URL as well, so refresh will remember parameters, lazy way.
 	// Instead of hidden form
-	// request.setAttribute("jobNumber", jobNumber);
-	// request.setAttribute("title", title);
-	// request.getRequestDispatcher("/poll").forward(request, response);
 	response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);
     }
 
     /**
-     * This method will trigger Util.shutdown() methosd to orderly finish the ThreadPool executor.
+     * Triggers Util.shutdown() method to orderly finish the ThreadPool executor. Avoids memory leaks.
      * @see Servlet#destroy()
      */
     public void destroy() {
