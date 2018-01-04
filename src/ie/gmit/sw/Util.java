@@ -20,6 +20,7 @@ public class Util {
     private static int shingles;
     private static DocumentDao db;
     private static boolean loggingOn = false;
+    private static int refreshRate;
 
     private Util() {
     }
@@ -131,6 +132,14 @@ public class Util {
      */
     public static void setLoggingON(boolean loggingOn) {
 	Util.loggingOn = loggingOn;
+    }
+    
+    public static int getRefreshRate() {
+        return refreshRate;
+    }
+
+    public static void setRefreshRate(int refreshRate) {
+        Util.refreshRate = refreshRate;
     }
 
     /**

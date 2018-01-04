@@ -7,8 +7,9 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * Logging service Singleton class, used to log (console and file) warnings, errors and such 
- * by whole application via ArrayBlockingQueue servLog. Runs in it's own Thread.
+ * Logging service Singleton class, used to log (console and file) warnings, errors 
+ * by whole application via ArrayBlockingQueue servLog accessible by Util class. 
+ * Runs in it's own Thread.
  * 
  * @author Martin Repicky g00328337@gmit.ie
  *
@@ -61,10 +62,10 @@ public class LogService {
 	    logger.addHandler(fh);
 	    SimpleFormatter formatter = new SimpleFormatter();
 	    fh.setFormatter(formatter);
+	    // System.getProperty("line.separator") is used because same string is used for console and file
 	    String log = new StringBuilder().append("Logging Service Started in: ").append(logFile)
 		    .append(System.getProperty("line.separator")).append("==============================").toString();
-	    // Allows to orderly finish thread. Waits for stop to be true to know when to
-	    // stop
+	    // Allows to orderly finish thread. Waits for stop to be true to know when to stop
 	    do {
 		logger.info(log);
 		log = servLog.take();

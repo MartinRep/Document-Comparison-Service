@@ -4,7 +4,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Model class. Used by persistence service to store, retrieve documents and to compare them.
+ * Model class. Used by DocumentDao class for storage and retrieval 
+ * and by ProcessDocument class for comparison.
+ * 
+ * !! Set<Integer> MinHashFunctions MUST BE IDENTICAL FOR EVERY DOCUMENT COMPARED !!
  * 
  * @author Martin Repicky g00328337@gmit.ie
  *
@@ -16,7 +19,7 @@ public class Document {
     private String title;
     // Set of minHash from every XOR hashFunction
     private Set<Integer> minHashes;
-    // These random hashes set has to be the same for every document compared
+    // Set of random hashes. Must be identical in all documents compared!
     private Set<Integer> hashFunctions;
 
     public Document(String title) {

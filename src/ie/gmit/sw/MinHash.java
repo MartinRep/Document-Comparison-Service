@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Facade from MinHash comparing function called by Worker.class. Facade pattern hides the complexities of the system and 
- * provides an interface to the client using which the client can access the system.
- * Manages processing of document from BufferedReader through Set of words and hashes to finally Set of minHashes.
+ * Facade class for document processing and database functions. Called by Worker class.
+ * Facade pattern hides the complexities of the system and provides an interface to the client
+ *  using which the client can access the system.
+ * Manages processing of document from BufferedReader through Set of words and Set of hash codes
+ * ro finally Set of minHashes integers.
  * Also manages persistent storage via DAO interface DocumentDao.  
  * 
  * @author Martin Repicky g00328337@gmit.ie
@@ -43,6 +45,13 @@ public class MinHash {
 	return pd.getHashes(words);
     }
 
+    /**
+     * When Set of hash code is generated from words hash code with minimum value is stored separately.
+     * This saves O(n) for looping over Set again. 
+     * @param numOfHashes
+     * @return
+     */
+    
     public Set<Integer> getHashFunctions(int numOfHashes) {
 	Set<Integer> hashFunctions = pd.getHashFunctions(numOfHashes);
 	hashFunctions.add(pd.getMinHash());

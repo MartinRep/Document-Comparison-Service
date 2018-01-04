@@ -26,9 +26,9 @@ public class Db4oService {
     }
 
     /**
-     * Method to retrieve object of Class objectClass from persistence storage
+     * Method to retrieve object of Class objectClass from persistence storage.
      * @param objectClass Class to be retrieved from database.
-     * @return Set of Objects defined by objectClass Class
+     * @return Set of Objects defined by objectClass Class.
      */
     
     @SuppressWarnings("rawtypes")
@@ -38,8 +38,7 @@ public class Db4oService {
 	db = Db4oEmbedded.openFile(config, fileName);
 	Query query = db.query();
 	query.constrain(objectClass);
-	ObjectSet<Object> result = query.execute();
-	return result;
+	return query.execute();
     }
 
     /**

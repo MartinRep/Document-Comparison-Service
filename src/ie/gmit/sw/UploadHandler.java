@@ -34,7 +34,8 @@ public class UploadHandler extends HttpServlet {
      * Initial parameter: dbFile String -  The absolute path and filename for documents persistence DAO.
      * Initial parameter: password String - The password for documents persistence DAO.
      * Initial parameter: shingles String - The Set size of hash functions used for getting minHash values. Recommended size 300.
-     * Initial parameter: loggingOn Boolean - The switch for Logging service. This will log to console and logFile specified. 
+     * Initial parameter: loggingOn Boolean - The switch for Logging service. This will log to console and logFile specified.
+     * Initial parameter: refreshRate String - The size of the page refresh delay set to browser when pooling for results.  
      * @param config This is a Servlets object from which parameters are read from web.xml.
      * 
      * @exception ServletException 
@@ -47,12 +48,14 @@ public class UploadHandler extends HttpServlet {
 	String password = config.getInitParameter("password");
 	int shingles = Integer.parseInt(config.getInitParameter("shingles"));
 	boolean loggingOn = Boolean.parseBoolean(config.getInitParameter("logging"));
+	int refreshRate = Integer.parseInt(config.getInitParameter("refreshRate"));
 	Util.init();
 	Util.setLoggingON(loggingOn);
 	Util.initThreadPool(numOfWorkers);
 	DocumentDao db = (DocumentDao) new Db4oController(dbFile, password);
 	Util.setDb(db);
 	Util.setShingles(shingles);
+	Util.setRefreshRate(refreshRate);
 	if (Util.isLoggingOn()) {
 	    LogService.init(Util.getServLog(), logFile);
 	}

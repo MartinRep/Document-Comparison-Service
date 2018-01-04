@@ -31,5 +31,9 @@
       <param-name>logging</param-name>
       <param-value>true</param-value>
     </init-param>
+    <init-param>
+      <param-name>refreshRate</param-name>
+      <param-value>5</param-value>
+    </init-param>
   </servlet>
 </web-app>

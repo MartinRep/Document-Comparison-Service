@@ -1,8 +1,8 @@
 package ie.gmit.sw;
 
 /**
- * Abstract class to be used by ThreadPoolService. Worker.class extends this as 
- * ThreadPoolService uses Prototype design pattern to save resources when re-populating the ThreadPool. 
+ * Abstract class to be used by ThreadPoolService class. Worker class extends this as 
+ * ThreadPoolService uses Prototype design pattern to save resources when re-populating larger ThreadPools. 
  * 
  * @author Martin Repicky g00328337@gmit.ie
  *

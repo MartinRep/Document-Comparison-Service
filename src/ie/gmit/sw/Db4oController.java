@@ -48,7 +48,7 @@ public class Db4oController implements DocumentDao {
     }
     
     /**
-     * Store Document object to database via Db4Service.class
+     * Store a Document object to database via Db4Service class
      * @param document Document object to be saved. Uploaded and processed document from UploadHandler servlet
      */
 

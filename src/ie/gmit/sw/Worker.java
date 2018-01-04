@@ -7,8 +7,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Runnable and Cloneable Worker class extends Abstract HeavyWorker.class. ThreadPoolService uses this class through HeavyWorker abstract class.
- * Process Job object from inQueue through MinHash.class Facade and stores results into Results object and output it to outQueue hashMap,
+ * Runnable and Cloneable Worker class extends Abstract HeavyWorker class. ThreadPoolService uses this class through HeavyWorker abstract class.
+ * Process an Job object from inQueue through MinHash class Facade and stores results into Results object and output it to outQueue hashMap,
  * where it will be displayed via PoolHander Servlet. 
  * 
  * @author Martin Repicky g00328337@gmit.ie
@@ -25,9 +25,12 @@ public class Worker extends HeavyWorker {
     private Results results;
 
     /**
-     * Worker runnable method. Get words from BufferedReaded, hashes from words, hashFunctions from previously stored documents,
-     * as these has to be the same for all the documents for comparison to be accurate. Finally calculate minHashes for the document
-     * by XORing every word hashes by number of shingles defined and only compare and stores the smallest hash from every HashFunction 
+     * Worker runnable method. Via Minhash class Facade gets words from BufferedReaded, hashes from words,
+     * hashFunctions from previously stored documents, as these has to be the same for all the documents
+     * for comparison to be accurate! 
+     * Finally calculate minHashes for the document by XOR bitwise function applied to every word hash code.
+     * This is repeated by number of shingles defined. 
+     * Only compare and store the smallest hash code from every HashFunction, one shingle for every HashFunction. 
      * @exception IOException, InterruptedException
      * 
      */
