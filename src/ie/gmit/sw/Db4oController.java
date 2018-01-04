@@ -6,7 +6,7 @@ import java.util.List;
 import com.db4o.ObjectSet;
 import com.db4o.ext.Db4oException;
 
-public class Db4oController implements DocumentDAO {
+public class Db4oController implements DocumentDao {
     String fileName;
     String password;
 

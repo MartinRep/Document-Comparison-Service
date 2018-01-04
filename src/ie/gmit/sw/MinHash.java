@@ -8,10 +8,10 @@ import java.util.Set;
 
 public class MinHash {
 
-    private DocumentDAO db;
+    private DocumentDao db;
     private ProcessDocument pd;
 
-    public MinHash(DocumentDAO db) {
+    public MinHash(DocumentDao db) {
 	this.db = db;
 	pd = new ProcessDocument();
     }

@@ -14,7 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 /**
- * Servlet implementation class UploadHandler
+ * Servlet implementation class UploadHandler. Process POST request from 'index.jsp' and 
+ * reads in initial variables from 'web.xml'
+ * 
+ * @author Martin Repicky g00328337
  */
 @WebServlet(asyncSupported = true, description = "Handles new document file upload", urlPatterns = { "/upload" })
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB. The file size in bytes after which the file will be
@@ -26,27 +29,35 @@ public class UploadHandler extends HttpServlet {
     private static ArrayBlockingQueue<Job> inQueue;
 
     /**
+     * This method is triggered when first instance of Servlet is loaded.
+     * Initial parameter: logFile String - The absolute path and filename for Logging service file.
+     * Initial parameter: dbFile String -  The absolute path and filename for documents persistence DAO.
+     * Initial parameter: password String - The password for documents persistence DAO.
+     * Initial parameter: shingles String - The Set size of hash functions used for getting minHash values. Recommended size 300.
+     * Initial parameter: loggingOn Boolean - The switch for Logging service. This will log to console and logFile specified. 
+     * @param config This is a Servlets object from which parameters are read from web.xml.
+     * 
+     * @exception ServletException 
      * @see Servlet#init(ServletConfig)
      */
     public void init(ServletConfig config) throws ServletException {
-	// gets Initial parameters from web.xml
 	int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
 	String logFile = config.getInitParameter("logFile");
 	String dbFile = config.getInitParameter("dbFile");
 	String password = config.getInitParameter("password");
 	int shingles = Integer.parseInt(config.getInitParameter("shingles"));
-	boolean loggingON = Boolean.parseBoolean(config.getInitParameter("logging"));
-	// Singleton variables share initialization. Has to be First thing to init.
+	boolean loggingOn = Boolean.parseBoolean(config.getInitParameter("logging"));
+	// Util.class Singleton class for variables share between Servlet and . Has to be First thing to init.
 	Util.init();
-	Util.setLoggingON(loggingON);
+	Util.setLoggingON(loggingOn);
 	Util.initThreadPool(numOfWorkers);
 	// This will allow to change dataBase via web.xml config file eventually.
-	DocumentDAO db = (DocumentDAO) new Db4oController(dbFile, password);
+	DocumentDao db = (DocumentDao) new Db4oController(dbFile, password);
 	Util.setDb(db);
 	Util.setShingles(shingles);
 	// Initialing Logging service to listen on servLog ArrayBlockingQueue messages
 	// and write to file logFile.
-	if (Util.isLoggingON()) {
+	if (Util.isLoggingOn()) {
 	    LogService.init(Util.getServLog(), logFile);
 	}
 	inQueue = Util.getInQueue();
@@ -65,6 +76,10 @@ public class UploadHandler extends HttpServlet {
     }
 
     /**
+     * Process POST request initialized by 'index.jsp'.
+     * Creates Job object with document title as 'txtTitle' String and document stream as 'txtDocument' BufferedReader
+     * and gets jobNumeber integer from Util.class static method. Job object is then handed to ArrayBlockingQueue inQueue
+     * to be processed by ThreadPool of Worker.class. And finally it redirects to PollHandler Servlet, where results will be displayed once processed
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
      */
@@ -90,6 +105,7 @@ public class UploadHandler extends HttpServlet {
     }
 
     /**
+     * This method will trigger Util.shutdown() methosd to orderly finish the ThreadPool executor.
      * @see Servlet#destroy()
      */
     public void destroy() {

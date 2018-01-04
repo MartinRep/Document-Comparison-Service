@@ -11,8 +11,8 @@ public class Util {
     private static volatile int workerNumber = 0;
     private static ArrayBlockingQueue<String> servLog;
     private static int shingles;
-    private static DocumentDAO db;
-    private static boolean loggingON = false;
+    private static DocumentDao db;
+    private static boolean loggingOn = false;
 
     private Util() {
     }
@@ -70,24 +70,24 @@ public class Util {
 	Util.shingles = shingles;
     }
 
-    public static DocumentDAO getDb() {
+    public static DocumentDao getDb() {
 	return db;
     }
 
-    public static void setDb(DocumentDAO db) {
+    public static void setDb(DocumentDao db) {
 	Util.db = db;
     }
 
-    public static boolean isLoggingON() {
-	return loggingON;
+    public static boolean isLoggingOn() {
+	return loggingOn;
     }
 
-    public static void setLoggingON(boolean loggingON) {
-	Util.loggingON = loggingON;
+    public static void setLoggingON(boolean loggingOn) {
+	Util.loggingOn = loggingOn;
     }
 
     public static void logMessage(String message) {
-	if (Util.isLoggingON())
+	if (Util.isLoggingOn())
 	    servLog.offer(message);
     }
 
@@ -96,7 +96,7 @@ public class Util {
 	ThreadPoolService.shutDown();
 	logMessage(String.format("Total jobs processed: %d", jobNumber));
 	logMessage(String.format("Total workers spawned: %d", workerNumber));
-	if (Util.isLoggingON())
+	if (Util.isLoggingOn())
 	    LogService.shutdown();
     }
 
