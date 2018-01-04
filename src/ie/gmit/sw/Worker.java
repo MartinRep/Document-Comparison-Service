@@ -6,6 +6,14 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Runnable and Cloneable Worker class extends Abstract HeavyWorker.class. ThreadPoolService uses this class through HeavyWorker abstract class.
+ * Process Job object from inQueue through MinHash.class Facade and stores results into Results object and output it to outQueue hashMap,
+ * where it will be displayed via PoolHander Servlet. 
+ * 
+ * @author Martin Repicky g00328337@gmit.ie
+ */
+
 public class Worker extends HeavyWorker {
 
     private static ArrayBlockingQueue<Job> inQueue;
@@ -16,6 +24,14 @@ public class Worker extends HeavyWorker {
     private List<Document> documents;
     private Results results;
 
+    /**
+     * Worker runnable method. Get words from BufferedReaded, hashes from words, hashFunctions from previously stored documents,
+     * as these has to be the same for all the documents for comparison to be accurate. Finally calculate minHashes for the document
+     * by XORing every word hashes by number of shingles defined and only compare and stores the smallest hash from every HashFunction 
+     * @exception IOException, InterruptedException
+     * 
+     */
+    
     @Override
     public void run() {
 	workerNumber = Util.getWorkerNumber();

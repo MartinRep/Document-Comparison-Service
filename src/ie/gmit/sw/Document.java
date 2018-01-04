@@ -3,6 +3,13 @@ package ie.gmit.sw;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**
+ * Model class. Used by persistence service to store, retrieve documents and to compare them.
+ * 
+ * @author Martin Repicky g00328337@gmit.ie
+ *
+ */
+
 public class Document {
 
     // Document name

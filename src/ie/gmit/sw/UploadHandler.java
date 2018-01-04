@@ -38,7 +38,7 @@ public class UploadHandler extends HttpServlet {
      * @param config This is a Servlets object from which parameters are read from web.xml.
      * 
      * @exception ServletException 
-     * @see Servlet#init(ServletConfig)
+     * @see {@link HttpServlet#init(ServletConfig)}i
      */
     public void init(ServletConfig config) throws ServletException {
 	int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
@@ -91,14 +91,13 @@ public class UploadHandler extends HttpServlet {
 	    Util.logMessage(
 		    String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
 	}
-	// Changes browser URL as well, so refresh will remember parameters, lazy way.
-	// Instead of hidden form
+	// Changes browser URL as well, so refresh will remember parameters, Instead of hidden form.
 	response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);
     }
 
     /**
      * Triggers Util.shutdown() method to orderly finish the ThreadPool executor. Avoids memory leaks.
-     * @see Servlet#destroy()
+     * @see HttpServlet#destroy()
      */
     public void destroy() {
 	Util.shutdown();

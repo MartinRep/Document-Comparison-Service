@@ -6,6 +6,15 @@ import java.util.List;
 import com.db4o.ObjectSet;
 import com.db4o.ext.Db4oException;
 
+/**
+ * Data Access Object concrete class - This class implements DocumentDao interface.
+ * Creates instance of Db4oService with parameters(filename, password) define in web.xml
+ * then process the generic Object class retreived by D4oService and parse it do Document object.
+ * It is called by Worker via MinHash Facade. 
+ * @author Martin Repicky g00328337@gmit.ie
+ *
+ */
+
 public class Db4oController implements DocumentDao {
     String fileName;
     String password;
@@ -16,6 +25,11 @@ public class Db4oController implements DocumentDao {
 	this.password = password;
     }
 
+    /**
+     * Get all the Document.class objects from database and process them into List.
+     * @return List of Document objects retrieved from database via D4oService.
+     */
+    
     @Override
     public List<Document> getDocuments() {
 	List<Document> documents = new ArrayList<>();
@@ -32,6 +46,11 @@ public class Db4oController implements DocumentDao {
 	}
 	return documents;
     }
+    
+    /**
+     * Store Document object to database via Db4Service.class
+     * @param document Document object to be saved. Uploaded and processed document from UploadHandler servlet
+     */
 
     @Override
     public void storeDocument(Document document) {

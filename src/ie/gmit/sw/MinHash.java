@@ -6,6 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Facade from MinHash comparing function called by Worker.class. Facade pattern hides the complexities of the system and 
+ * provides an interface to the client using which the client can access the system.
+ * Manages processing of document from BufferedReader through Set of words and hashes to finally Set of minHashes.
+ * Also manages persistent storage via DAO interface DocumentDao.  
+ * 
+ * @author Martin Repicky g00328337@gmit.ie
+ * @see ProcessDocument
+ * @see DocumentDao
+ */
+
 public class MinHash {
 
     private DocumentDao db;

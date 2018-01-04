@@ -6,6 +6,14 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+/**
+ * Logging service Singleton class, used to log (console and file) warnings, errors and such 
+ * by whole application via ArrayBlockingQueue servLog. Runs in it's own Thread.
+ * 
+ * @author Martin Repicky g00328337@gmit.ie
+ *
+ */
+
 public class LogService {
 
     private static String logFile;
@@ -28,6 +36,13 @@ public class LogService {
 	dLogger.start();
     }
 
+    /**
+     * Singleton Initialization method.
+     * @param servLog ArrayBlockingQueue of Strings where messages to be logged are put.
+     * @param logFile Absolute path and File name for log file.
+     * @return instance of LogService
+     */
+    
     public static synchronized LogService init(ArrayBlockingQueue<String> servLog, String logFile) {
 	if (instance == null) {
 	    instance = new LogService(servLog, logFile);
@@ -62,7 +77,9 @@ public class LogService {
 	    System.out.println("ERROR Opening Log file! Please set the corrent path in web.xml\n " + e.getMessage());
 	}
     }
-
+    /**
+     * Terminate the logging Thread.
+     */
     public static void shutdown() {
 	stop = true;
     }

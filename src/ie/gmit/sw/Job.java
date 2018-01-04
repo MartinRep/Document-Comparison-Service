@@ -2,6 +2,13 @@ package ie.gmit.sw;
 
 import java.io.BufferedReader;
 
+/**
+ * Model class. Used by UploadHandler to pass the document to Worker, where it is processed.
+ * 
+ * @author Martin Repicky g00328337@gmit.ie
+ *
+ */
+
 public class Job {
     private int jobNumber;
     private String title;

@@ -12,7 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Servlet implementation class PollHandler
+ * Servlet implementation class PollHandler. Display pooling message if document comparing haven't returned
+ * results yet. Set to refresh page every 10 second to check Hashmap against job number received
+ * as parameter from UploadHandler servlet.
+ * 
+ * @author Martin Repicky g00328337@gmit.ie
  */
 @WebServlet(description = "Handles Pooling and displaying Results", urlPatterns = { "/poll" })
 public class PollHandler extends HttpServlet {
@@ -26,6 +30,12 @@ public class PollHandler extends HttpServlet {
 	super();
     }
 
+    /**
+     * This method is triggered when first instance of Servlet is loaded.
+     * Gets ConcurrentHashMap instance from Utility.class. This is where
+     * Results of the comparison are put by workers. Check them against jobNumber. 
+     */
+    
     @Override
     public void init(ServletConfig config) throws ServletException {
 	super.init(config);
@@ -34,6 +44,11 @@ public class PollHandler extends HttpServlet {
     }
 
     /**
+     * Handles results requests. UploadHandler servlet redirects here after document
+     * is submitted for comparison. Servlet checks outQueue hashmap for jobNumeber value.
+     * If the results are not in HashMap yet pooling message with job number is displayed instead.
+     * Once the results are found they are displayed in the table.
+     * @throws ServletException, IOException   
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */

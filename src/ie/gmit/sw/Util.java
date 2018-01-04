@@ -36,7 +36,7 @@ public class Util {
     
     /**
      * Initialize application wide, concurrent variables as well as ThreadPool 
-     * @param numOfWorkers - Size of ThreadPool of Worker.class, inQueue of Job.class and Logging queue for String message logs.
+     * @param numOfWorkers Size of ThreadPool of Worker.class, inQueue of Job.class and Logging queue for String message logs.
      */
     public static void initThreadPool(int numOfWorkers) {
 	inQueue = new ArrayBlockingQueue<>(numOfWorkers);

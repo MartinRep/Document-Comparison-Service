@@ -3,6 +3,14 @@ package ie.gmit.sw;
 import java.util.HashMap;
 import java.util.Set;
 
+/**
+ * Model class. Used by Worker to store results from comparing document against already stored documents.
+ * PoolHandler Servlet takes these Results and display them in the table.
+ * 
+ * @author Martin Repicky g00328337@gmit.ie
+ *
+ */
+
 public class Results {
     private int jobNumber;
     private String title;
