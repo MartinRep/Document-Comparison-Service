@@ -48,8 +48,8 @@ public class MinHash {
     /**
      * When Set of hash code is generated from words hash code with minimum value is stored separately.
      * This saves O(n) for looping over Set again. 
-     * @param numOfHashes
-     * @return
+     * @param numOfHashes Integer. Size of the Hash function set.
+     * @return hashFunctions Set of size numOfHashes of randomly generated Integers.
      */
     
     public Set<Integer> getHashFunctions(int numOfHashes) {

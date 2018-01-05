@@ -45,7 +45,7 @@ public class UploadHandler extends HttpServlet {
      * @param config This is a Servlets object from which parameters are read from web.xml.
      * 
      * @exception ServletException 
-     * @see {@link HttpServlet#init(ServletConfig)}i
+     * @see HttpServlet#init
      */
     public void init(ServletConfig config) throws ServletException {
 	Config.setLoggingOn(Boolean.parseBoolean(config.getInitParameter("logging")));

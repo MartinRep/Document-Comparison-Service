@@ -4,8 +4,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Utility class. Facade Singleton. Initialize and share application wide variables.
- * Servlet initialized variables, Logging queue, Jobs inQueue, Results outQueue, etc..
+ * Utility class, Facade. Initialize and share application wide variables.
+ * Servlet initialized variables, Logging queue, Jobs inQueue, Results outQueue and Thread pool of workers.
  * 
  * @author Martin Repicky G00328337@gmit.ie
  *
@@ -23,7 +23,6 @@ public class Util {
 
     /**
      * Initialize application wide, concurrent variables as well as ThreadPool of workers.
-     * @param numOfWorkers Size of ThreadPool of Worker.class, inQueue of Job.class and Logging queue for String message logs.
      */
     public static synchronized Boolean init() {
 	// initialization of workers thread pool. The size determined in web.xml.
@@ -60,7 +59,6 @@ public class Util {
     }
     
     /**
-     * 
      * @return jobNumber integer. Used by UploadHandler to assign unique job number.
      */
     public static synchronized int getJobNumber() {
@@ -105,7 +103,10 @@ public class Util {
     public static int getHashFunctionsSize() {
 	return Config.hashFunctionsSize;
     }
-
+    
+    /**
+     * @return Integer. Size of Shingle. Number of words per shingle. Used by Worker.
+     */
     public static int getShingleSize() {
         return Config.shingleSize;
     }
@@ -124,6 +125,9 @@ public class Util {
 	return Config.loggingOn;
     }
 
+    /**
+     * @return Integer. Determine refresh delay for results pooling.
+     */
     public static int getRefreshRate() {
         return Config.refreshRate;
     }
@@ -155,6 +159,13 @@ public class Util {
 	super.finalize();
     }
     
+    
+    /**
+     * Inner class for configuration variables. Set by UploadHandler with Initial parameters from web.xml.
+     * Must be set before Util class is Initialized. 
+     * @author Martin Repicky g00328337@gmit.ie
+     *
+     */
     public static class Config
     {
 	private static int numOfWorkers;
@@ -165,16 +176,24 @@ public class Util {
 	private static int refreshRate;
 	private static String logFile;
 	
+	
+	/**
+	 * @param numOfWorkers Integer. Determine the size of Thread pool, inQueue and servLog.
+	 */
 	public static void setNumOfWorkers(int numOfWorkers) {
 	    Config.numOfWorkers = numOfWorkers;
 	}
 	
 	/**
-	* @param shingles Used by UploadHandler Servlet when Initializing. Value read from web.xml
+	* @param hashFunctions Used by UploadHandler Servlet when Initializing. Value read from web.xml
 	*/
 	public static void setHashFunctions(int hashFunctions) {
 	    Config.hashFunctionsSize = hashFunctions;
 	}
+	
+	/**
+	 * @param shingleSize Integer. Determine the size of shingle. Number of words per shingle.
+	 */
 	public static void setShingleSize(int shingleSize) {
 	    Config.shingleSize = shingleSize;
 	}
@@ -192,9 +211,17 @@ public class Util {
 	public static void setLoggingOn(boolean loggingOn) {
 	    Config.loggingOn = loggingOn;
 	}
+	
+	/**
+	 * @param refreshRate Integer. Set refresh rate of Pooling web page in browser.
+	 */
 	public static void setRefreshRate(int refreshRate) {
 	    Config.refreshRate = refreshRate;
 	}
+	
+	/**
+	 * @param logFile String. Absolute path and file name for logging file.
+	 */
 	public static void setLogFile(String logFile) {
 	    Config.logFile = logFile;
 	}
