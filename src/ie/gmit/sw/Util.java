@@ -13,45 +13,32 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Util {
     private static ArrayBlockingQueue<Job> inQueue;
     private static ConcurrentHashMap<Integer, Results> outQueue;
-    private static Util instance;
     private static ThreadPoolService workersPool;
     private static volatile int jobNumber = 0;
     private static volatile int workerNumber = 0;
     private static ArrayBlockingQueue<String> servLog;
-    private static int hashFunctions;
-    private static int shingleSize;
-    private static DocumentDao db;
-    private static boolean loggingOn = false;
-    private static int refreshRate;
 
     private Util() {
     }
 
     /**
-     * Util.class Singleton initialize function. 
-     */
-    public static synchronized Util init() {
-	if (instance == null) {
-	    instance = new Util();
-	}
-	return instance;
-    }
-    
-    /**
      * Initialize application wide, concurrent variables as well as ThreadPool of workers.
      * @param numOfWorkers Size of ThreadPool of Worker.class, inQueue of Job.class and Logging queue for String message logs.
      */
-    public static Boolean initThreadPool(int numOfWorkers) {
-	inQueue = new ArrayBlockingQueue<>(numOfWorkers);
-	servLog = new ArrayBlockingQueue<>(numOfWorkers);
-	outQueue = new ConcurrentHashMap<>();
+    public static Boolean init() {
 	// initialization of workers thread pool. The size determined in web.xml.
 	try {
-	    workersPool = new ThreadPoolService(Worker.class, numOfWorkers);
-	    Util.logMessage(String.format("Thread Pool initialized with %d heavyWorkers", numOfWorkers));
+	    inQueue = new ArrayBlockingQueue<>(Config.numOfWorkers);
+	    servLog = new ArrayBlockingQueue<>(Config.numOfWorkers);
+	    outQueue = new ConcurrentHashMap<>();
+	    workersPool = new ThreadPoolService(Worker.class, Config.numOfWorkers);
+	    if (Util.isLoggingOn()) LogService.init(Util.getServLog(), Config.logFile);
+	    Util.logMessage(String.format("Thread Pool initialized with %d heavyWorkers", Config.numOfWorkers));
 	    return true;
 	} catch (Exception e) {
 	    Util.logMessage("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
+	    // In case Logging service failed to start.
+	    System.out.println("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
 	}
 	return false;
     }
@@ -59,7 +46,6 @@ public class Util {
     /**
      * @return ArrayBlockingQueue. Used by UploadHandler Servlet and Worker 
      */
-    
     public static ArrayBlockingQueue<Job> getInQueue() {
 	return inQueue;
     }
@@ -67,7 +53,6 @@ public class Util {
     /**
      * @return ConcurrentHashmap<Integer. Results>. Used by worker and PoolHandler Servlet.
      */
-    
     public static ConcurrentHashMap<Integer, Results> getOutQueue() {
 	return outQueue;
     }
@@ -93,7 +78,6 @@ public class Util {
      * Add a new Worker to Thread pool. If more than predefine workers are submitted 
      * then they are held in a queue until threads become available.
      */
-    
     public static boolean processJob(Job job)
     {
 	try {
@@ -117,59 +101,29 @@ public class Util {
      * @return Integer. Used by Worker.class and passed to MinHash.class
      */
     public static int getHashFunctions() {
-	return hashFunctions;
+	return Config.hashFunctions;
     }
 
-    /**
-     * @param shingles Used by UploadHandler Servlet when Initializing. Value read from web.xml
-     */
-    public static void setHashFunctions(int shingles) {
-	Util.hashFunctions = shingles;
-    }
-    
     public static int getShingleSize() {
-        return shingleSize;
-    }
-
-    public static void setShingleSize(int shingleCount) {
-        Util.shingleSize = shingleCount;
+        return Config.shingleSize;
     }
 
     /**
      * @return DocumentDao interface. Used by MinHash.class when accessing database.
      */
     public static DocumentDao getDb() {
-	return db;
-    }
-
-    /**
-     * @param db DocumentDao interface type for persistent storage. It set by UploadHandler Servlet
-     */
-    
-    public static void setDb(DocumentDao db) {
-	Util.db = db;
+	return Config.db;
     }
 
     /**
      * @return Boolean. Determine the state of Logging service, On or Off.
      */
     public static boolean isLoggingOn() {
-	return loggingOn;
+	return Config.loggingOn;
     }
 
-    /**
-     * @param loggingOn Boolean. Set by UploadHandler Servlet, read from web.xml
-     */
-    public static void setLoggingOn(boolean loggingOn) {
-	Util.loggingOn = loggingOn;
-    }
-    
     public static int getRefreshRate() {
-        return refreshRate;
-    }
-
-    public static void setRefreshRate(int refreshRate) {
-        Util.refreshRate = refreshRate;
+        return Config.refreshRate;
     }
 
     /**
@@ -197,6 +151,52 @@ public class Util {
     protected void finalize() throws Throwable {
 	shutdown();
 	super.finalize();
+    }
+    
+    public static class Config
+    {
+	private static int numOfWorkers;
+	private static int hashFunctions;
+	private static int shingleSize;
+	private static DocumentDao db;
+	private static boolean loggingOn = false;
+	private static int refreshRate;
+	private static String logFile;
+	
+	public static void setNumOfWorkers(int numOfWorkers) {
+	    Config.numOfWorkers = numOfWorkers;
+	}
+	
+	/**
+	* @param shingles Used by UploadHandler Servlet when Initializing. Value read from web.xml
+	*/
+	public static void setHashFunctions(int hashFunctions) {
+	    Config.hashFunctions = hashFunctions;
+	}
+	public static void setShingleSize(int shingleSize) {
+	    Config.shingleSize = shingleSize;
+	}
+	
+	/**
+	 * @param db DocumentDao interface type for persistent storage. It set by UploadHandler Servlet
+	 */
+	public static void setDb(DocumentDao db) {
+	    Config.db = db;
+	}
+	
+	/**
+	* @param loggingOn Boolean. Set by UploadHandler Servlet, read from web.xml
+	*/
+	public static void setLoggingOn(boolean loggingOn) {
+	    Config.loggingOn = loggingOn;
+	}
+	public static void setRefreshRate(int refreshRate) {
+	    Config.refreshRate = refreshRate;
+	}
+	public static void setLogFile(String logFile) {
+	    Config.logFile = logFile;
+	}
+	
     }
 
 }

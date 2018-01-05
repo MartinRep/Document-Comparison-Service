@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
+import ie.gmit.sw.Util.Config;
+
 
 /**
  * Servlet implementation class UploadHandler. Process POST request from 'index.jsp' and 
@@ -45,17 +47,14 @@ public class UploadHandler extends HttpServlet {
      * @see {@link HttpServlet#init(ServletConfig)}i
      */
     public void init(ServletConfig config) throws ServletException {
-	Util.init();
-	Util.setLoggingOn(Boolean.parseBoolean(config.getInitParameter("logging")));
-	if(Util.initThreadPool(Integer.parseInt(config.getInitParameter("workers")))) {
-        	Util.setDb(new Db4oController(config.getInitParameter("dbFile"), config.getInitParameter("password")));
-        	Util.setHashFunctions(Integer.parseInt(config.getInitParameter("HashFunctionCount")));
-        	Util.setShingleSize(Integer.parseInt(config.getInitParameter("shingleSize")));
-        	Util.setRefreshRate(Integer.parseInt(config.getInitParameter("refreshRate")));
-        	if (Util.isLoggingOn()) LogService.init(Util.getServLog(), config.getInitParameter("logFile"));
-        	Util.logMessage("Upload Servlet initialized");
-	} else fatalError = true;
-	
+	Config.setLoggingOn(Boolean.parseBoolean(config.getInitParameter("logging")));
+	Config.setLogFile(config.getInitParameter("logFile"));
+	Config.setDb(new Db4oController(config.getInitParameter("dbFile"), config.getInitParameter("password")));
+	Config.setHashFunctions(Integer.parseInt(config.getInitParameter("HashFunctionCount")));
+	Config.setShingleSize(Integer.parseInt(config.getInitParameter("shingleSize")));
+	Config.setRefreshRate(Integer.parseInt(config.getInitParameter("refreshRate")));
+	Config.setNumOfWorkers(Integer.parseInt(config.getInitParameter("workers")));
+	if(!Util.init()) fatalError = true;
     }
 
     /**
