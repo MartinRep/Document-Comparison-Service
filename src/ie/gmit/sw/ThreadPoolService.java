@@ -11,8 +11,8 @@ import java.util.concurrent.ThreadFactory;
  */
 
 public class ThreadPoolService {
-    private static ExecutorService executor;
-
+    private ExecutorService executor;
+    private HeavyWorker worker;
     /**
      * Creates ThreadPool of size numOfWorkers with type workerClass HeavyWorkers.
      * @param workerClass HeavyWorker abstract class type. Runnable and Cloneable.
@@ -20,8 +20,12 @@ public class ThreadPoolService {
      * @throws Exception
      */
     
+    public ThreadPoolService() {
+ 	super();
+     }
+    
     @SuppressWarnings("rawtypes")
-    public static ExecutorService initThreadPool(Class workerClass, int numOfWorkers) throws Exception {
+    public void initThreadPool(Class workerClass, int numOfWorkers) throws InstantiationException, IllegalAccessException {
 	executor = Executors.newFixedThreadPool(numOfWorkers, new ThreadFactory() {
 	    
 	    @Override
@@ -29,21 +33,32 @@ public class ThreadPoolService {
 		return new Thread(r);
 	    }
 	});
+	worker = (HeavyWorker) workerClass.newInstance();
 	Util.logMessage(String.format("Thread Pool initialized with %d workers", numOfWorkers));
-	return executor;
+    }
+    
+    /**
+     * Add a new Worker to Thread pool. If more than predefine workers are submitted then 
+     * they are held in a queue until threads become available.
+     * @throws CloneNotSupportedException
+     */
+    
+    public void addWorker() throws CloneNotSupportedException
+    {
+	Runnable newWorker = (Runnable) worker.clone();
+	executor.execute(newWorker);
     }
 
     /**
-     * Function to orderly shutdown the ThreadPool, prevents memory leaks
+     *  Orderly shutdown the ThreadPool, prevents memory leaks
      */
-    public static void shutDown() {
+    public void shutDown() {
 	executor.shutdown();
-	Util.logMessage("ThreadPool Shutdown.");
     }
 
     @Override
     protected void finalize() throws Throwable {
-	ThreadPoolService.shutDown();
+	shutDown();
 	super.finalize();
     }
 }

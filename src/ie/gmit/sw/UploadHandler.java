@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -29,8 +28,6 @@ import javax.servlet.http.Part;
 public class UploadHandler extends HttpServlet {
     private static final long serialVersionUID = 465419841991L;
     private static ArrayBlockingQueue<Job> inQueue;
-    private static ExecutorService executor;
-    private static HeavyWorker heavyWorker;
 
     /**
      * This method is triggered when first instance of Servlet is loaded.
@@ -56,9 +53,8 @@ public class UploadHandler extends HttpServlet {
 	boolean loggingOn = Boolean.parseBoolean(config.getInitParameter("logging"));
 	int refreshRate = Integer.parseInt(config.getInitParameter("refreshRate"));
 	Util.init();
-	Util.setLoggingON(loggingOn);
+	Util.setLoggingOn(loggingOn);
 	Util.initThreadPool(numOfWorkers);
-	executor = Util.getExecutor();
 	DocumentDao db = (DocumentDao) new Db4oController(dbFile, password);
 	Util.setDb(db);
 	Util.setHashFunctions(hashFunctionCount);
@@ -68,7 +64,6 @@ public class UploadHandler extends HttpServlet {
 	    LogService.init(Util.getServLog(), logFile);
 	}
 	inQueue = Util.getInQueue();
-	heavyWorker = new Worker();
 	Util.logMessage("Upload Servlet initialized");
     }
 
@@ -98,10 +93,9 @@ public class UploadHandler extends HttpServlet {
 	BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
 	Job job = new Job(jobNumber, title, document);
 	try {
-	    HeavyWorker worker = (HeavyWorker) heavyWorker.clone();
-	    executor.execute(worker);
+	    Util.addWorker();
 	    inQueue.put(job);
-	} catch (InterruptedException | CloneNotSupportedException e) {
+	} catch (InterruptedException e) {
 	    Util.logMessage(
 		    String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
 	}

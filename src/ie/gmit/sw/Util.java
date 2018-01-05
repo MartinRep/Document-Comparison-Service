@@ -2,7 +2,6 @@ package ie.gmit.sw;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Utility class. Singleton. Initialize and share application wide variables.
@@ -15,7 +14,7 @@ public class Util {
     private static ArrayBlockingQueue<Job> inQueue;
     private static ConcurrentHashMap<Integer, Results> outQueue;
     private static Util instance;
-    private static ExecutorService executor;
+    private static ThreadPoolService workersPool;
     private static volatile int jobNumber = 0;
     private static volatile int workerNumber = 0;
     private static ArrayBlockingQueue<String> servLog;
@@ -39,7 +38,7 @@ public class Util {
     }
     
     /**
-     * Initialize application wide, concurrent variables as well as ThreadPool 
+     * Initialize application wide, concurrent variables as well as ThreadPool of workers.
      * @param numOfWorkers Size of ThreadPool of Worker.class, inQueue of Job.class and Logging queue for String message logs.
      */
     public static void initThreadPool(int numOfWorkers) {
@@ -48,7 +47,8 @@ public class Util {
 	outQueue = new ConcurrentHashMap<>();
 	// initialization of workers thread pool. The size determined in web.xml.
 	try {
-	    executor = ThreadPoolService.initThreadPool(Worker.class, numOfWorkers);
+	    workersPool = new ThreadPoolService();
+	    workersPool.initThreadPool(Worker.class, numOfWorkers);
 	} catch (Exception e) {
 	    Util.logMessage("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
 	}
@@ -70,14 +70,6 @@ public class Util {
 	return outQueue;
     }
     
-    public static ExecutorService getExecutor() {
-        return executor;
-    }
-
-    public static void setExecutor(ExecutorService executor) {
-        Util.executor = executor;
-    }
-
     /**
      * 
      * @return jobNumber integer. Used by UploadHandler to assign unique job number.
@@ -93,6 +85,20 @@ public class Util {
     public static synchronized int getWorkerNumber() {
 	workerNumber++;
 	return workerNumber;
+    }
+    
+    /**
+     * Add a new Worker to Thread pool. If more than predefine workers are submitted 
+     * then they are held in a queue until threads become available.
+     */
+    
+    public static void addWorker()
+    {
+	try {
+	    workersPool.addWorker();
+	} catch (CloneNotSupportedException e) {
+	    Util.logMessage("ERROR adding new Worker to ThreadPool: " + e.getMessage());
+	}
     }
 
     /**
@@ -149,7 +155,7 @@ public class Util {
     /**
      * @param loggingOn Boolean. Set by UploadHandler Servlet, read from web.xml
      */
-    public static void setLoggingON(boolean loggingOn) {
+    public static void setLoggingOn(boolean loggingOn) {
 	Util.loggingOn = loggingOn;
     }
     
@@ -175,9 +181,10 @@ public class Util {
      * Safe shutting down of thread pool, prevent possible memory leaks.
      */
     public static void shutdown() {
-	ThreadPoolService.shutDown();
-	logMessage(String.format("Total jobs processed: %d", jobNumber));
-	logMessage(String.format("Total workers spawned: %d", workerNumber));
+	workersPool.shutDown();
+	Util.logMessage("ThreadPool Shutdown.");
+	Util.logMessage(String.format("Total jobs processed: %d", jobNumber));
+	Util.logMessage(String.format("Total workers spawned: %d", workerNumber));
 	if (Util.isLoggingOn())
 	    LogService.shutdown();
     }

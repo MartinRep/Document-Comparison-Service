@@ -51,14 +51,14 @@ public class ProcessDocument {
 	Set<Integer> shingleHashCodes = new TreeSet<>();
 	for (String word : words) {
 	    shingle = shingle.append(word);
-	    if(shingleCount < shingleSize) {
+	    if(shingleCount == shingleSize) {
 		int hashCode = word.hashCode();
 		shingleHashCodes.add(hashCode);
-		if (minHash < hashCode)
-		    minHash = hashCode;
+		if (minHash < hashCode) minHash = hashCode;
 		shingleCount = 0;
+	    } else {
+		shingleCount++;
 	    }
-	    shingleCount++;
 	}
 	return shingleHashCodes;
     }
