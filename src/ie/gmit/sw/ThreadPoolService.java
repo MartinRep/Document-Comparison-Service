@@ -2,6 +2,7 @@ package ie.gmit.sw;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * Creates and keep re-populating ThreadPool with HeavyWorker.class workers. Generalized class, can be reused. 
@@ -13,21 +14,23 @@ public class ThreadPoolService {
     private static ExecutorService executor;
 
     /**
-     * Creates ThreadPool of size numOfWorkers with type workerClass Workers.
+     * Creates ThreadPool of size numOfWorkers with type workerClass HeavyWorkers.
      * @param workerClass HeavyWorker abstract class type. Runnable and Cloneable.
      * @param numOfWorkers Size of the ThreadPool
      * @throws Exception
      */
     
     @SuppressWarnings("rawtypes")
-    public static void initThreadPool(Class workerClass, int numOfWorkers) throws Exception {
-	executor = Executors.newFixedThreadPool(numOfWorkers);
-	HeavyWorker heavyWorker = (HeavyWorker) workerClass.newInstance();
-	for (int i = 0; i < numOfWorkers; i++) {
-	    Runnable worker = (Runnable) heavyWorker.clone();
-	    executor.execute(worker);
-	}
+    public static ExecutorService initThreadPool(Class workerClass, int numOfWorkers) throws Exception {
+	executor = Executors.newFixedThreadPool(numOfWorkers, new ThreadFactory() {
+	    
+	    @Override
+	    public Thread newThread(Runnable r) {
+		return new Thread(r);
+	    }
+	});
 	Util.logMessage(String.format("Thread Pool initialized with %d workers", numOfWorkers));
+	return executor;
     }
 
     /**

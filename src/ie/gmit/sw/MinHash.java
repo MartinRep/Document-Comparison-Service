@@ -41,8 +41,8 @@ public class MinHash {
 	return pd.getWords(document);
     }
 
-    public Set<Integer> getHashes(Set<String> words) {
-	return pd.getHashes(words);
+    public Set<Integer> getHashes(Set<String> words, int shingleSize) {
+	return pd.getHashes(words, shingleSize);
     }
 
     /**

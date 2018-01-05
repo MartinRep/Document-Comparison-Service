@@ -50,9 +50,9 @@ public class Worker extends HeavyWorker {
 		document = new Document(job.getTitle());
 		results = new Results(job.getJobNumber(), job.getTitle());
 		Set<String> words = minHash.getWords(job.getDocument());
-		Set<Integer> hashes = minHash.getHashes(words);
+		Set<Integer> hashes = minHash.getHashes(words, Util.getShingleSize());
 		if (documents.isEmpty()) {
-		    document.setHashFunctions(minHash.getHashFunctions(Util.getShingles()));
+		    document.setHashFunctions(minHash.getHashFunctions(Util.getHashFunctions()));
 		} else {
 		    document.setHashFunctions(documents.get(0).getHashFunctions());
 		}

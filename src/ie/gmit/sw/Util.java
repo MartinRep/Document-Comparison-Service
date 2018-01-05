@@ -2,6 +2,7 @@ package ie.gmit.sw;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Utility class. Singleton. Initialize and share application wide variables.
@@ -14,10 +15,12 @@ public class Util {
     private static ArrayBlockingQueue<Job> inQueue;
     private static ConcurrentHashMap<Integer, Results> outQueue;
     private static Util instance;
+    private static ExecutorService executor;
     private static volatile int jobNumber = 0;
     private static volatile int workerNumber = 0;
     private static ArrayBlockingQueue<String> servLog;
-    private static int shingles;
+    private static int hashFunctions;
+    private static int shingleSize;
     private static DocumentDao db;
     private static boolean loggingOn = false;
     private static int refreshRate;
@@ -45,7 +48,7 @@ public class Util {
 	outQueue = new ConcurrentHashMap<>();
 	// initialization of workers thread pool. The size determined in web.xml.
 	try {
-	    ThreadPoolService.initThreadPool(Worker.class, numOfWorkers);
+	    executor = ThreadPoolService.initThreadPool(Worker.class, numOfWorkers);
 	} catch (Exception e) {
 	    Util.logMessage("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
 	}
@@ -65,6 +68,14 @@ public class Util {
     
     public static ConcurrentHashMap<Integer, Results> getOutQueue() {
 	return outQueue;
+    }
+    
+    public static ExecutorService getExecutor() {
+        return executor;
+    }
+
+    public static void setExecutor(ExecutorService executor) {
+        Util.executor = executor;
     }
 
     /**
@@ -94,15 +105,23 @@ public class Util {
     /**
      * @return Integer. Used by Worker.class and passed to MinHash.class
      */
-    public static int getShingles() {
-	return shingles;
+    public static int getHashFunctions() {
+	return hashFunctions;
     }
 
     /**
      * @param shingles Used by UploadHandler Servlet when Initializing. Value read from web.xml
      */
-    public static void setShingles(int shingles) {
-	Util.shingles = shingles;
+    public static void setHashFunctions(int shingles) {
+	Util.hashFunctions = shingles;
+    }
+    
+    public static int getShingleSize() {
+        return shingleSize;
+    }
+
+    public static void setShingleSize(int shingleCount) {
+        Util.shingleSize = shingleCount;
     }
 
     /**

@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -27,13 +29,16 @@ import javax.servlet.http.Part;
 public class UploadHandler extends HttpServlet {
     private static final long serialVersionUID = 465419841991L;
     private static ArrayBlockingQueue<Job> inQueue;
+    private static ExecutorService executor;
+    private static HeavyWorker heavyWorker;
 
     /**
      * This method is triggered when first instance of Servlet is loaded.
      * Initial parameter: logFile String - The absolute path and filename for Logging service file.
      * Initial parameter: dbFile String -  The absolute path and filename for documents persistence DAO.
      * Initial parameter: password String - The password for documents persistence DAO.
-     * Initial parameter: shingles String - The Set size of hash functions used for getting minHash values. Recommended size 300.
+     * Initial parameter: hashFunctionCount String - The Set size of hash functions used for getting minHash values. Recommended size 300.
+     * Initial parameter: shingleSize - The number of words to make shingle from hash code is calculated. Preserve context.
      * Initial parameter: loggingOn Boolean - The switch for Logging service. This will log to console and logFile specified.
      * Initial parameter: refreshRate String - The size of the page refresh delay set to browser when pooling for results.  
      * @param config This is a Servlets object from which parameters are read from web.xml.
@@ -46,20 +51,24 @@ public class UploadHandler extends HttpServlet {
 	String logFile = config.getInitParameter("logFile");
 	String dbFile = config.getInitParameter("dbFile");
 	String password = config.getInitParameter("password");
-	int shingles = Integer.parseInt(config.getInitParameter("shingles"));
+	int hashFunctionCount = Integer.parseInt(config.getInitParameter("HashFunctionCount"));
+	int shingleSize = Integer.parseInt(config.getInitParameter("shingleSize"));
 	boolean loggingOn = Boolean.parseBoolean(config.getInitParameter("logging"));
 	int refreshRate = Integer.parseInt(config.getInitParameter("refreshRate"));
 	Util.init();
 	Util.setLoggingON(loggingOn);
 	Util.initThreadPool(numOfWorkers);
+	executor = Util.getExecutor();
 	DocumentDao db = (DocumentDao) new Db4oController(dbFile, password);
 	Util.setDb(db);
-	Util.setShingles(shingles);
+	Util.setHashFunctions(hashFunctionCount);
+	Util.setShingleSize(shingleSize);
 	Util.setRefreshRate(refreshRate);
 	if (Util.isLoggingOn()) {
 	    LogService.init(Util.getServLog(), logFile);
 	}
 	inQueue = Util.getInQueue();
+	heavyWorker = new Worker();
 	Util.logMessage("Upload Servlet initialized");
     }
 
@@ -89,8 +98,10 @@ public class UploadHandler extends HttpServlet {
 	BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
 	Job job = new Job(jobNumber, title, document);
 	try {
+	    HeavyWorker worker = (HeavyWorker) heavyWorker.clone();
+	    executor.execute(worker);
 	    inQueue.put(job);
-	} catch (InterruptedException e) {
+	} catch (InterruptedException | CloneNotSupportedException e) {
 	    Util.logMessage(
 		    String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
 	}

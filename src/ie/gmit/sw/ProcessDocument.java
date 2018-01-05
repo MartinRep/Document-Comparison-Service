@@ -44,16 +44,23 @@ public class ProcessDocument {
      * @return Set of hash codes for every word in the document
      */
     
-    public Set<Integer> getHashes(Set<String> words) {
+    public Set<Integer> getHashes(Set<String> words, int shingleSize) {
 	minHash = Integer.MAX_VALUE;
-	Set<Integer> wordsHashes = new TreeSet<>();
+	StringBuilder shingle = new StringBuilder();
+	int shingleCount = 0;
+	Set<Integer> shingleHashCodes = new TreeSet<>();
 	for (String word : words) {
-	    int hash = word.hashCode();
-	    wordsHashes.add(hash);
-	    if (minHash < hash)
-		minHash = hash;
+	    shingle = shingle.append(word);
+	    if(shingleCount < shingleSize) {
+		int hashCode = word.hashCode();
+		shingleHashCodes.add(hashCode);
+		if (minHash < hashCode)
+		    minHash = hashCode;
+		shingleCount = 0;
+	    }
+	    shingleCount++;
 	}
-	return wordsHashes;
+	return shingleHashCodes;
     }
 
     /**

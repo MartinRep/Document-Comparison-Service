@@ -9,7 +9,7 @@
     <servlet-class>ie.gmit.sw.UploadHandler</servlet-class>
     <init-param>
       <param-name>workers</param-name>
-      <param-value>10</param-value>
+      <param-value>2</param-value>
     </init-param>
     <init-param>
       <param-name>logFile</param-name>
@@ -24,7 +24,11 @@
       <param-value>Top secret</param-value>
     </init-param>
     <init-param>
-      <param-name>shingles</param-name>
+      <param-name>shingleSize</param-name>
+      <param-value>5</param-value>
+    </init-param>
+    <init-param>
+      <param-name>HashFunctionCount</param-name>
       <param-value>300</param-value>
     </init-param>
     <init-param>
