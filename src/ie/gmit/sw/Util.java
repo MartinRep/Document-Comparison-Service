@@ -4,7 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Utility class. Singleton. Initialize and share application wide variables.
+ * Utility class. Facade Singleton. Initialize and share application wide variables.
  * Servlet initialized variables, Logging queue, Jobs inQueue, Results outQueue, etc..
  * 
  * @author Martin Repicky G00328337@gmit.ie
@@ -41,17 +41,19 @@ public class Util {
      * Initialize application wide, concurrent variables as well as ThreadPool of workers.
      * @param numOfWorkers Size of ThreadPool of Worker.class, inQueue of Job.class and Logging queue for String message logs.
      */
-    public static void initThreadPool(int numOfWorkers) {
+    public static Boolean initThreadPool(int numOfWorkers) {
 	inQueue = new ArrayBlockingQueue<>(numOfWorkers);
 	servLog = new ArrayBlockingQueue<>(numOfWorkers);
 	outQueue = new ConcurrentHashMap<>();
 	// initialization of workers thread pool. The size determined in web.xml.
 	try {
-	    workersPool = new ThreadPoolService();
-	    workersPool.initThreadPool(Worker.class, numOfWorkers);
+	    workersPool = new ThreadPoolService(Worker.class, numOfWorkers);
+	    Util.logMessage(String.format("Thread Pool initialized with %d heavyWorkers", numOfWorkers));
+	    return true;
 	} catch (Exception e) {
 	    Util.logMessage("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
 	}
+	return false;
     }
 
     /**
@@ -92,13 +94,16 @@ public class Util {
      * then they are held in a queue until threads become available.
      */
     
-    public static void addWorker()
+    public static boolean processJob(Job job)
     {
 	try {
-	    workersPool.addWorker();
-	} catch (CloneNotSupportedException e) {
+	    workersPool.addHeavyWorker();
+	    inQueue.put(job);
+	} catch (CloneNotSupportedException | InterruptedException e) {
 	    Util.logMessage("ERROR adding new Worker to ThreadPool: " + e.getMessage());
+	    return false;
 	}
+	return true;
     }
 
     /**
@@ -169,7 +174,7 @@ public class Util {
 
     /**
      * Logging service entry point. Function is called by any class to log,
-     *  to console and file, any warnings, errors and such. 
+     *  to console and file, any warnings, errors and such. ArrayBlockingQueue.offer is nonBlocking.
      * @param message String to be logged. 
      */
     public static void logMessage(String message) {
@@ -185,8 +190,7 @@ public class Util {
 	Util.logMessage("ThreadPool Shutdown.");
 	Util.logMessage(String.format("Total jobs processed: %d", jobNumber));
 	Util.logMessage(String.format("Total workers spawned: %d", workerNumber));
-	if (Util.isLoggingOn())
-	    LogService.shutdown();
+	if (Util.isLoggingOn()) LogService.shutdown();
     }
 
     @Override

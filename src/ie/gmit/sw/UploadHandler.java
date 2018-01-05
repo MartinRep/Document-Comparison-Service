@@ -3,7 +3,6 @@ package ie.gmit.sw;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
 
 /**
  * Servlet implementation class UploadHandler. Process POST request from 'index.jsp' and 
@@ -27,7 +27,7 @@ import javax.servlet.http.Part;
 	maxRequestSize = 1024 * 1024 * 51) // 51MB. he maximum size allowed for a multipart/form-data request, in bytes.
 public class UploadHandler extends HttpServlet {
     private static final long serialVersionUID = 465419841991L;
-    private static ArrayBlockingQueue<Job> inQueue;
+    private boolean fatalError = false;
 
     /**
      * This method is triggered when first instance of Servlet is loaded.
@@ -37,34 +37,25 @@ public class UploadHandler extends HttpServlet {
      * Initial parameter: hashFunctionCount String - The Set size of hash functions used for getting minHash values. Recommended size 300.
      * Initial parameter: shingleSize - The number of words to make shingle from hash code is calculated. Preserve context.
      * Initial parameter: loggingOn Boolean - The switch for Logging service. This will log to console and logFile specified.
-     * Initial parameter: refreshRate String - The size of the page refresh delay set to browser when pooling for results.  
+     * Initial parameter: refreshRate String - The size of the page refresh delay set to browser when pooling for results.
+     *   
      * @param config This is a Servlets object from which parameters are read from web.xml.
      * 
      * @exception ServletException 
      * @see {@link HttpServlet#init(ServletConfig)}i
      */
     public void init(ServletConfig config) throws ServletException {
-	int numOfWorkers = Integer.parseInt(config.getInitParameter("workers"));
-	String logFile = config.getInitParameter("logFile");
-	String dbFile = config.getInitParameter("dbFile");
-	String password = config.getInitParameter("password");
-	int hashFunctionCount = Integer.parseInt(config.getInitParameter("HashFunctionCount"));
-	int shingleSize = Integer.parseInt(config.getInitParameter("shingleSize"));
-	boolean loggingOn = Boolean.parseBoolean(config.getInitParameter("logging"));
-	int refreshRate = Integer.parseInt(config.getInitParameter("refreshRate"));
 	Util.init();
-	Util.setLoggingOn(loggingOn);
-	Util.initThreadPool(numOfWorkers);
-	DocumentDao db = (DocumentDao) new Db4oController(dbFile, password);
-	Util.setDb(db);
-	Util.setHashFunctions(hashFunctionCount);
-	Util.setShingleSize(shingleSize);
-	Util.setRefreshRate(refreshRate);
-	if (Util.isLoggingOn()) {
-	    LogService.init(Util.getServLog(), logFile);
-	}
-	inQueue = Util.getInQueue();
-	Util.logMessage("Upload Servlet initialized");
+	Util.setLoggingOn(Boolean.parseBoolean(config.getInitParameter("logging")));
+	if(Util.initThreadPool(Integer.parseInt(config.getInitParameter("workers")))) {
+        	Util.setDb(new Db4oController(config.getInitParameter("dbFile"), config.getInitParameter("password")));
+        	Util.setHashFunctions(Integer.parseInt(config.getInitParameter("HashFunctionCount")));
+        	Util.setShingleSize(Integer.parseInt(config.getInitParameter("shingleSize")));
+        	Util.setRefreshRate(Integer.parseInt(config.getInitParameter("refreshRate")));
+        	if (Util.isLoggingOn()) LogService.init(Util.getServLog(), config.getInitParameter("logFile"));
+        	Util.logMessage("Upload Servlet initialized");
+	} else fatalError = true;
+	
     }
 
     /**
@@ -80,29 +71,27 @@ public class UploadHandler extends HttpServlet {
     /**
      * Process POST request initialized by 'index.jsp'.
      * Creates Job object with document title as 'txtTitle' String and document stream as 'txtDocument' BufferedReader
-     * and gets jobNumeber integer from Util.class static method. Job object is then handed to ArrayBlockingQueue inQueue
-     * to be processed by ThreadPool of Worker.class. And finally it redirects to PollHandler Servlet, where results will be displayed once processed
+     * and gets jobNumeber integer from Util class static method. Job object is then handed to Util class Facade
+     * to be processed by ThreadPool of HeavyWorker class. And finally it redirects to PollHandler Servlet, where results will be displayed once processed.
+     * If any Exception is thrown in Util class an error message page is displayed.
      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
      *      response)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	int jobNumber = Util.getJobNumber();
-	String title = request.getParameter("txtTitle");
-	Part part = request.getPart("txtDocument");
-	BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
-	Job job = new Job(jobNumber, title, document);
-	try {
-	    Util.addWorker();
-	    inQueue.put(job);
-	} catch (InterruptedException e) {
-	    Util.logMessage(
-		    String.format("Servlet error inserting document: %s Error: %s", job.getDocument(), e.getMessage()));
+	if(fatalError) response.sendRedirect("error.jsp");
+	else {
+	    int jobNumber = Util.getJobNumber();
+	    String title = request.getParameter("txtTitle");
+	    Part part = request.getPart("txtDocument");
+	    BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
+	    Job job = new Job(jobNumber, title, document);
+	    // Changes browser URL as well, so refresh will remember parameters, Instead of hidden form.    
+	    if(Util.processJob(job)) response.sendRedirect("error.jsp");
+	    else response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);		
 	}
-	// Changes browser URL as well, so refresh will remember parameters, Instead of hidden form.
-	response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);
     }
-
+    
     /**
      * Triggers Util.shutdown() method to orderly finish the ThreadPool executor. Avoids memory leaks.
      * @see HttpServlet#destroy()
