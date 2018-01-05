@@ -40,6 +40,7 @@ public class UploadHandler extends HttpServlet {
      * Initial parameter: shingleSize - The number of words to make shingle from hash code is calculated. Preserve context.
      * Initial parameter: loggingOn Boolean - The switch for Logging service. This will log to console and logFile specified.
      * Initial parameter: refreshRate String - The size of the page refresh delay set to browser when pooling for results.
+     * Initial parameter: workers Integer - The size of the Thread pool, iQueue and servLog.
      *   
      * @param config This is a Servlets object from which parameters are read from web.xml.
      * 
@@ -63,7 +64,7 @@ public class UploadHandler extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	request.setAttribute("message", "There was an error processing the file");
+	request.setAttribute("message", "First submit the file.");
 	request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
 

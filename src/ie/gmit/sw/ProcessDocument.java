@@ -52,10 +52,11 @@ public class ProcessDocument {
 	for (String word : words) {
 	    shingle = shingle.append(word);
 	    if(shingleCount == shingleSize) {
-		int hashCode = word.hashCode();
+		int hashCode = shingle.toString().hashCode();
 		shingleHashCodes.add(hashCode);
 		if (minHash < hashCode) minHash = hashCode;
 		shingleCount = 0;
+		shingle = new StringBuilder();
 	    } else {
 		shingleCount++;
 	    }

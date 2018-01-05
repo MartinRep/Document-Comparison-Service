@@ -9,7 +9,7 @@
     <servlet-class>ie.gmit.sw.UploadHandler</servlet-class>
     <init-param>
       <param-name>workers</param-name>
-      <param-value>2</param-value>
+      <param-value>10</param-value>
     </init-param>
     <init-param>
       <param-name>logFile</param-name>
@@ -29,7 +29,7 @@
     </init-param>
     <init-param>
       <param-name>HashFunctionCount</param-name>
-      <param-value>300</param-value>
+      <param-value>200</param-value>
     </init-param>
     <init-param>
       <param-name>logging</param-name>

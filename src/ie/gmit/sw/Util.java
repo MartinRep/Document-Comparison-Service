@@ -25,14 +25,16 @@ public class Util {
      * Initialize application wide, concurrent variables as well as ThreadPool of workers.
      * @param numOfWorkers Size of ThreadPool of Worker.class, inQueue of Job.class and Logging queue for String message logs.
      */
-    public static Boolean init() {
+    public static synchronized Boolean init() {
 	// initialization of workers thread pool. The size determined in web.xml.
 	try {
 	    inQueue = new ArrayBlockingQueue<>(Config.numOfWorkers);
-	    servLog = new ArrayBlockingQueue<>(Config.numOfWorkers);
 	    outQueue = new ConcurrentHashMap<>();
 	    workersPool = new ThreadPoolService(Worker.class, Config.numOfWorkers);
-	    if (Util.isLoggingOn()) LogService.init(Util.getServLog(), Config.logFile);
+	    if (Util.isLoggingOn()) {
+		servLog = new ArrayBlockingQueue<>(Config.numOfWorkers);
+		LogService.init(Util.getServLog(), Config.logFile);
+	    }
 	    Util.logMessage(String.format("Thread Pool initialized with %d heavyWorkers", Config.numOfWorkers));
 	    return true;
 	} catch (Exception e) {
@@ -100,8 +102,8 @@ public class Util {
     /**
      * @return Integer. Used by Worker.class and passed to MinHash.class
      */
-    public static int getHashFunctions() {
-	return Config.hashFunctions;
+    public static int getHashFunctionsSize() {
+	return Config.hashFunctionsSize;
     }
 
     public static int getShingleSize() {
@@ -156,7 +158,7 @@ public class Util {
     public static class Config
     {
 	private static int numOfWorkers;
-	private static int hashFunctions;
+	private static int hashFunctionsSize;
 	private static int shingleSize;
 	private static DocumentDao db;
 	private static boolean loggingOn = false;
@@ -171,7 +173,7 @@ public class Util {
 	* @param shingles Used by UploadHandler Servlet when Initializing. Value read from web.xml
 	*/
 	public static void setHashFunctions(int hashFunctions) {
-	    Config.hashFunctions = hashFunctions;
+	    Config.hashFunctionsSize = hashFunctions;
 	}
 	public static void setShingleSize(int shingleSize) {
 	    Config.shingleSize = shingleSize;

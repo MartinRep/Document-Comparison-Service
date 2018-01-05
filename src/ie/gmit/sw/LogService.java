@@ -30,7 +30,7 @@ public class LogService {
 		try {
 		    logger();
 		} catch (InterruptedException e) {
-		    System.out.println("ERROR Logging service error: " + e.getMessage());
+		    System.out.println("[ERROR] Logging service error: " + e.getMessage());
 		}
 	    }
 	});
@@ -73,9 +73,9 @@ public class LogService {
 	    log = "[Warning] Logging Service Stopped.";
 	    logger.warning(log);
 	} catch (SecurityException e) {
-	    System.out.println("ERROR Logging service exception: " + e.getMessage());
+	    System.out.println("[ERROR] Logging service exception: " + e.getMessage());
 	} catch (IOException e) {
-	    System.out.println("ERROR Opening Log file! Please set the corrent path in web.xml\n " + e.getMessage());
+	    System.out.println("[ERROR] Opening Log file! Please set the corrent path in web.xml\n " + e.getMessage());
 	}
     }
     /**

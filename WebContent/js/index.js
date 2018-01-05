@@ -23,6 +23,7 @@ function Init()
 	
 function Validate()
 {
+	$("#error").attr("hidden","true");
 	if ($("#title").existsWithValue() && $("#file").existsWithValue()) 
 	{
 		$("#submitBt").removeAttr("disabled");
@@ -31,7 +32,7 @@ function Validate()
 	}
 	else 
 	{
-		$("#submitBt").attr("disabled","True");
+		$("#submitBt").attr("disabled","Disabled");
 		console.log("Btn Disabled");
 		return false;
 	}
