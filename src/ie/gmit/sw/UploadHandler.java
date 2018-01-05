@@ -87,8 +87,8 @@ public class UploadHandler extends HttpServlet {
 	    BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
 	    Job job = new Job(jobNumber, title, document);
 	    // Changes browser URL as well, so refresh will remember parameters, Instead of hidden form.    
-	    if(Util.processJob(job)) response.sendRedirect("error.jsp");
-	    else response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);		
+	    if(Util.processJob(job)) response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);
+	    else response.sendRedirect("error.jsp");		
 	}
     }
     
