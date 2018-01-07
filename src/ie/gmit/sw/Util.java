@@ -201,8 +201,8 @@ public class Util {
 	/**
 	 * @param db DocumentDao interface type for persistent storage. It set by UploadHandler Servlet
 	 */
-	public static void setDb(DocumentDao db) {
-	    Config.db = db;
+	public static void setDb(String filename, String password) {
+	    Config.db = new Db4oController(filename, password);
 	}
 	
 	/**

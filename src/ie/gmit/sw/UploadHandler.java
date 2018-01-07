@@ -49,7 +49,7 @@ public class UploadHandler extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
 	Config.setLoggingOn(Boolean.parseBoolean(config.getInitParameter("logging")));
 	Config.setLogFile(config.getInitParameter("logFile"));
-	Config.setDb(new Db4oController(config.getInitParameter("dbFile"), config.getInitParameter("password")));
+	Config.setDb(config.getInitParameter("dbFile"), config.getInitParameter("password"));
 	Config.setHashFunctions(Integer.parseInt(config.getInitParameter("HashFunctionCount")));
 	Config.setShingleSize(Integer.parseInt(config.getInitParameter("shingleSize")));
 	Config.setRefreshRate(Integer.parseInt(config.getInitParameter("refreshRate")));
