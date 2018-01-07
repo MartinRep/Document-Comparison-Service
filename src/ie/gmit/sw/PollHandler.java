@@ -54,41 +54,54 @@ public class PollHandler extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
+	String title = new String();
+	int jobNumber = 0;
 	PrintWriter out = response.getWriter();
-	String title = request.getParameter("title");
-	int jobNumber = Integer.parseInt(request.getParameter("jobNumber"));
-	if (outQueue.size() > 0) {
-	    if (outQueue.containsKey(jobNumber)) {
-		// Getting comparison results, as well removing it from ConcurrentHashmap
-		Results results = outQueue.remove(jobNumber);
-		// Display results
-		String cssLocation = request.getContextPath() + "/css/results.css";
-		String cssTag = "<link rel='stylesheet' type='text/css' href='" + cssLocation + "'>";
-		out.printf("<html><head>%s</head><body>", cssTag);
-		out.print("<div class='centered'><table>");
-		out.printf("<h1 align=\"center\"><b>%s</b></h1>", title);
-		out.print("<tr><th>Document title</th><th>Similarity</th></tr>");
-		for (String docTitle : results.getDocuments()) {
-		    out.print("<tr><td>");
-		    out.print(docTitle);
-		    out.print("</td><td>");
-		    out.printf("%.0f %%", Double.valueOf(results.getResult(docTitle)));
-		    out.print("</td></tr>");
+	try {
+	    title = request.getParameter("title");
+	    jobNumber = Integer.parseInt(request.getParameter("jobNumber"));
+	    if (outQueue.size() > 0) {
+		if (outQueue.containsKey(jobNumber)) {
+		    // Getting comparison results, as well removing it from ConcurrentHashmap
+		    Results results = outQueue.remove(jobNumber);
+		    // Display results
+		    String cssLocation = request.getContextPath() + "/css/results.css";
+		    String cssTag = "<link rel='stylesheet' type='text/css' href='" + cssLocation + "'>";
+		    out.printf("<html><head>%s</head><body>", cssTag);
+		    out.print("<div class='centered'><table>");
+		    out.printf("<h1 align=\"center\"><b>%s</b></h1>", title);
+		    out.print("<tr><th>Document title</th><th>Similarity</th></tr>");
+		    for (String docTitle : results.getDocuments()) {
+			out.print("<tr><td>");
+			out.print(docTitle);
+			out.print("</td><td>");
+			out.printf("%.0f %%", Double.valueOf(results.getResult(docTitle)));
+			out.print("</td></tr>");
+		    }
+		    out.println();
+		    out.print("</table></div>");
+		    // Home button
+		    out.printf("<p align=\"center\">"
+			    + "<button onclick=\"window.location.href=' /Document-Comparison-Service/'\">Home</button>"
+			    + "</p>");
+		    out.print("</body></html>");
 		}
+		
+	    } else {
+		response.setIntHeader("Refresh", Util.getRefreshRate());
+		out.printf("<p align=\"center\">Processing document: <b>%s</b>, please wait...</p>", title);
 		out.println();
-		out.print("</table></div>");
+		out.printf("<p align=\"center\">Job Number: <b>%d</b></p>", jobNumber);
 		// Home button
 		out.printf("<p align=\"center\">"
-			+ "<button onclick=\"window.location.href=' /Document-Comparison-Service/'\">Home</button>"
-			+ "</p>");
+		    + "<button onclick=\"window.location.href=' /Document-Comparison-Service/'\">Home</button>"
+		    + "</p>");
 		out.print("</body></html>");
 	    }
-
-	} else {
-	    response.setIntHeader("Refresh", Util.getRefreshRate());
-	    out.printf("<p align=\"center\">Processing document: <b>%s</b>, please wait...</p>", title);
-	    out.println();
-	    out.printf("<p align=\"center\">Job Number: <b>%d</b></p>", jobNumber);
+	} catch (Exception exp)
+	{
+	    Util.logMessage("[ERROR] UploadHandler: " + exp.getMessage());
+	    response.sendRedirect("error.jsp");
 	}
 
     }

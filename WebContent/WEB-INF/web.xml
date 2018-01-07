@@ -24,12 +24,13 @@
       <param-value>Top secret</param-value>
     </init-param>
     <init-param>
+    	<!-- Depends on the type of documents compared -->
       <param-name>shingleSize</param-name>
-      <param-value>3</param-value>
+      <param-value>1</param-value>
     </init-param>
     <init-param>
       <param-name>HashFunctionCount</param-name>
-      <param-value>200</param-value>
+      <param-value>303</param-value>
     </init-param>
     <init-param>
       <param-name>logging</param-name>

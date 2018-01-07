@@ -4,11 +4,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Oooops...</title>
 </head>
 <body>
 	<h1 align="center">Oooops...</h1>
-	<p align="center">We're sorry, but it seems an unexpected error has occurred. </p>
+	<p align="center">We're sorry, but something went wrong. </p>
 	<p align="center">
 		<button onclick="window.location.href='/Document-Comparison-Service/'">Home</button>
 	</p>

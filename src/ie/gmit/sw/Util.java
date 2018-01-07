@@ -35,13 +35,13 @@ public class Util {
 		LogService.init(Util.getServLog(), Config.logFile);
 	    }
 	    Util.logMessage(String.format("Thread Pool initialized with %d heavyWorkers", Config.numOfWorkers));
-	    return true;
 	} catch (Exception e) {
 	    Util.logMessage("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
 	    // In case Logging service failed to start.
 	    System.out.println("ERROR: ThreadPool failed to initialize with Error message: " + e.getMessage());
+	    return false;
 	}
-	return false;
+	return true;
     }
 
     /**
@@ -52,7 +52,7 @@ public class Util {
     }
 
     /**
-     * @return ConcurrentHashmap<Integer. Results>. Used by worker and PoolHandler Servlet.
+     * @return ConcurrentHashmap<Integer, Results> Used by worker and PoolHandler Servlet.
      */
     public static ConcurrentHashMap<Integer, Results> getOutQueue() {
 	return outQueue;
@@ -67,7 +67,7 @@ public class Util {
     }
 
     /**
-     * @return wokerNumber integer. Used by Worker.class to keep track of workers. Not displayed, only for logging purposes.
+     * @return wokerNumber Integer, used by Worker.class to keep track of workers. Not displayed, only for logging purposes.
      */
     public static synchronized int getWorkerNumber() {
 	workerNumber++;
@@ -213,7 +213,7 @@ public class Util {
 	}
 	
 	/**
-	 * @param refreshRate Integer. Set refresh rate of Pooling web page in browser.
+	 * @param refreshRate Integer. Set refresh rate of Pooling web-page.
 	 */
 	public static void setRefreshRate(int refreshRate) {
 	    Config.refreshRate = refreshRate;

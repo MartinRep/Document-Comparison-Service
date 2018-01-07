@@ -17,19 +17,18 @@ import ie.gmit.sw.Util.Config;
 
 
 /**
- * Servlet implementation class UploadHandler. Process POST request from 'index.jsp' and 
- * reads in initial variables from 'web.xml'
+ * Servlet implementation class UploadHandler. Process POST request from 'index.jsp' 
+ * and reads-in initial variables from 'web.xml'
  * 
  * @author Martin Repicky g00328337
  */
 @WebServlet(asyncSupported = true, description = "Handles new document file upload", urlPatterns = { "/upload" })
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2, // 2MB. The file size in bytes after which the file will be
 						      // temporarily stored on disk. The default size is 0 bytes.
-	maxFileSize = 1024 * 1024 * 50, // 50MB. The maximum size allowed for uploaded files, in bytes
-	maxRequestSize = 1024 * 1024 * 51) // 51MB. he maximum size allowed for a multipart/form-data request, in bytes.
+	maxFileSize = 1024 * 1024 * 10, // 50MB. The maximum size allowed for uploaded files, in bytes
+	maxRequestSize = 1024 * 1024 * 50) // 51MB. he maximum size allowed for a multipart/form-data request, in bytes.
 public class UploadHandler extends HttpServlet {
     private static final long serialVersionUID = 465419841991L;
-    private boolean fatalError = false;
 
     /**
      * This method is triggered when first instance of Servlet is loaded.
@@ -55,10 +54,11 @@ public class UploadHandler extends HttpServlet {
 	Config.setShingleSize(Integer.parseInt(config.getInitParameter("shingleSize")));
 	Config.setRefreshRate(Integer.parseInt(config.getInitParameter("refreshRate")));
 	Config.setNumOfWorkers(Integer.parseInt(config.getInitParameter("workers")));
-	if(!Util.init()) fatalError = true;
+	Util.init();
     }
 
     /**
+     * Wrong request error handling. Redirects back to index page.
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
      *      response)
      */
@@ -79,21 +79,23 @@ public class UploadHandler extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
 	    throws ServletException, IOException {
-	if(fatalError) response.sendRedirect("error.jsp");
-	else {
+	try {
 	    int jobNumber = Util.getJobNumber();
 	    String title = request.getParameter("txtTitle");
 	    Part part = request.getPart("txtDocument");
 	    BufferedReader document = new BufferedReader(new InputStreamReader(part.getInputStream()));
 	    Job job = new Job(jobNumber, title, document);
+	    Util.processJob(job); 
 	    // Changes browser URL as well, so refresh will remember parameters, Instead of hidden form.    
-	    if(Util.processJob(job)) response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);
-	    else response.sendRedirect("error.jsp");		
+	    response.sendRedirect("poll?title=" + title + "&jobNumber=" + jobNumber);
+	} catch(Exception e) {
+	    System.out.println("[ERROR] UploadHadler: " + e.getMessage());
+	    response.sendRedirect("error.jsp");
 	}
     }
     
     /**
-     * Triggers Util.shutdown() method to orderly finish the ThreadPool executor. Avoids memory leaks.
+     * Triggers Util.shutdown() method to orderly finish the ThreadPool executor and Logging service.
      * @see HttpServlet#destroy()
      */
     public void destroy() {

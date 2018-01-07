@@ -26,8 +26,8 @@ public class Worker extends HeavyWorker {
 
     /**
      * Worker runnable method. Via Minhash class Facade gets words from BufferedReaded, hashes from words,
-     * hashFunctions from previously stored documents, as these has to be the same for all the documents
-     * for comparison to be accurate! 
+     * hashFunctions from previously stored documents.
+     * ! HashFunctions has to be the same for all the documents compared ! 
      * Finally calculate minHashes for the document by XOR bitwise function applied to every word hash code.
      * This is repeated by number of shingles defined. 
      * Only compare and store the smallest hash code from every HashFunction, one shingle for every HashFunction. 
@@ -57,11 +57,9 @@ public class Worker extends HeavyWorker {
 		    document.setHashFunctions(documents.get(0).getHashFunctions());
 		}
 		document.setMinHashes(minHash.getMinHashes(hashes, document.getHashFunctions()));
-		// Compare document against documents
 		results.addResults(minHash.compareDocument(document, documents));
-		// add Result into outQueue
 		outQueue.put(job.getJobNumber(), results);
-		if (!minHash.isAlreadySaved()) // Prevent duplicate saving
+		if (!minHash.isAlreadySaved())
 		{
 		    minHash.storeDocument(document);
 		}
