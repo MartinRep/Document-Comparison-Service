@@ -4,11 +4,12 @@ A JEE Application for Measuring Document Similarity.
 ## Overview
 Java web application that enables two or more documents to be compared for similarity.
 
-
+![Project Overview](https://github.com/MartinRep/Document-Comparison-Service/blob/master/gitAssets/ComparisonServiceOverview.png)
 
 ## Technologies
 - [Java](https://www.java.com/) Java is a set of computer software and specifications developed by Sun Microsystems, which was later acquired by the Oracle Corporation, that provides a system for developing application software and deploying it in a cross-platform computing environment.
 - [TomCat](https://tomcat.apache.org/) The Apache Tomcat® software is an open source implementation of the Java Servlet, JavaServer Pages, Java Expression Language and Java WebSocket technologies.
+- [Eclipse](https://www.eclipse.org/) Eclipse is an integrated development environment (IDE) used in computer programming, and is the most widely used Java IDE.
 - [JQuery](https://jquery.com/) Query is a cross-platform JavaScript library designed to simplify the client-side scripting of HTML.
 - [db4o](https://github.com/lytico/db4o) db4o was an embeddable open source object database for Java and.NET developers. It was developed, commercially licensed and supported by Actian. In October 2014, Actian declined to continue to actively pursue and promote the commercial db4o product offering for new customers.
 - [db4o XTEA encryption library](https://sourceforge.net/projects/db4oxtea/) XTEA (eXtended Tiny Encryption Algorithm) support for db4o open source object database. XTEA is a block cipher that operates on a 64-bit block size with a 128-bit key. An extremely tiny but very fast encryption algorithm (with cycles less than 32 rounds).
@@ -16,11 +17,12 @@ Java web application that enables two or more documents to be compared for simil
 
 ## Architecture
 
+Facade, Singleton, DAO, Prototype, Static class,
 
 
-## Installation
+## Installation for Eclipse
 
- - Clone this repository preferably with Eclipse as this is saved as Eclipse project.
+ - Clone this repository with Eclipse.
  - Click on the project in Eclipse Project Explorer and press Alt+Enter for Project properties.
  - Navigate to Java Build Path and Remove broken JRE System Library.
  - Click Add Library.. and select JRE System Library and Click Finish to update project with correct path to library
