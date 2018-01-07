@@ -17,8 +17,19 @@ Java web application that enables two or more documents to be compared for simil
 
 ## Architecture
 
-Facade, Singleton, DAO, Prototype, Static class,
+- UploadHandler servlet initialize Util class and set Util.Config inner class with parameters from `web.xml`. Creates a Job object with received file and title and pass it to the inQueue through Util class.
+ - Util static class implements **Fasade** design patern. Initilize LogService and ThreadPoolService class.
+ - LogService **Singleton** class logs all the messages to the file and console. 
+ - ThreadPoolService class spawns HeavyWorker abstract class type of workers into the fixedThreadPool using **Prototype** creational patern.
+ - Worker class implements HeavyWorker abstract class and process the Job object through MinHash **Fasade** class and output the Results object to outQueue.
+ - MinHash class implements **Fasade** design patern. Proces the document through ProcessDocument class. Retrieve and store Document objects through DocumentDao interface.
+ - DocumentDao interface. This interface defines the standard operations to be performed on a Document object(s).
+ - Db4oController class implements **DAO** interface and process request through Db4oService class.
+ - PollHandler servlet polls outQueue HashMap for results of a job and display them.
 
+### UML diagram
+
+![UML diagram](https://github.com/MartinRep/Document-Comparison-Service/blob/master/gitAssets/ComparisonSimpleUML.png)
 
 ## Installation for Eclipse
 
@@ -28,7 +39,7 @@ Facade, Singleton, DAO, Prototype, Static class,
  - Click Add Library.. and select JRE System Library and Click Finish to update project with correct path to library
  - Edit `web.xml` located in /WebContent/WEB-INF folder and change paths for logFile and dbFile.
  - Run Tomcat server (This web application was developed on Tomcat 9.0)
- - Navigate to `localhost:8080/Document-Comparison-Service/` to start using the service.
+ - Navigate to [localhost:8080/Document-Comparison-Service/](localhost:8080/Document-Comparison-Service/) to start using the service.
  - Please note the port as your Tomcat server can be running on different one.
 
 ## Usage
